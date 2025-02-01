@@ -31,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ onClick, name, titl
         <button 
             type="button"
             id={id}
-            className={`${className} my-2 text-lg gap-4 font-medium bg-bg font-body text-text px-4 py-2 rounded shadow-lg shadow-zinc-900 hover:shadow-gray-700 flex items-center focus:outline-none focus-within:shadow-gray-700 lg:max-w-[] cursor-pointer `} 
+            className={`${className} my-2 text-lg gap-4 font-medium bg-bg font-body text-text px-4 py-2 rounded shadow-md shadow-zinc-800 hover:shadow-gray-700 flex items-center focus:outline-none focus-within:shadow-gray-700 lg:max-w-[] cursor-pointer `} 
             onClick={onClick}
             name={name}
             title={title}

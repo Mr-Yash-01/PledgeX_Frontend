@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { IoSearchSharp, IoSend } from "react-icons/io5";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
 import InputField from "./InputField";
@@ -11,7 +11,7 @@ import { CgDetailsMore } from "react-icons/cg";
 import { FaLink } from "react-icons/fa";
 import { TbPigMoney } from "react-icons/tb";
 import { LuMilestone } from "react-icons/lu";
-import { GiTakeMyMoney } from "react-icons/gi";
+import { ToastContext } from "@/store/ToastContext";
 
 interface FDisplayProps {
   text: string;
@@ -22,17 +22,44 @@ interface FDisplayProps {
 const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   const [isSearchEnabled, setIsSearchEnabled] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [project, setProject] = useState({
+
+  interface Milestone {
+    name: string;
+    cost: number;
+    tillDate: string;
+    difficulty: string;
+  }
+
+  interface Project {
+    title: string;
+    category: string;
+    description: string;
+    githubLink: string;
+    startDate: string;
+    endDate: string;
+    totalAmount: number;
+    milestones: Milestone[];
+  }
+
+  const [project, setProject] = useState<Project>({
     title: "",
     category: "",
     description: "",
     githubLink: "",
     startDate: "",
     endDate: "",
-    totalAmount: "",
+    totalAmount: 0,
     milestones: [],
   });
+  const [tempMilestone, setTempMilestone] = useState<Milestone>({
+    name: "",
+    cost: 0,
+    tillDate: "",
+    difficulty: "",
+  });
   const [difficulty, setDifficulty] = useState("");
+  const [currentMileStoneIndex, setCurrentMileStoneIndex] = useState(0);
+  const toast = useContext(ToastContext);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -41,99 +68,191 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   const githubLinkRef = useRef<HTMLInputElement>(null);
   const startDateRef = useRef<HTMLInputElement>(null);
   const endDateRef = useRef<HTMLInputElement>(null);
-  const totalAmountRef = useRef<HTMLInputElement>(null);
   const milestoneRef = useRef<HTMLInputElement>(null);
   const milestoneCostRef = useRef<HTMLInputElement>(null);
   const tillDateRef = useRef<HTMLInputElement>(null);
 
-const handleAddMilestone = () => {
-    const milestoneName = milestoneRef.current?.value;
-    const milestoneCost = milestoneCostRef.current?.value;
-    const tillDate = tillDateRef.current?.value;
-    const startDate = startDateRef.current?.value;
-    const endDate = endDateRef.current?.value;
+  const validateGithubLink = () => {
+    return true;
+    const githubLinkPattern =
+      /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+\/?$/;
 
-    if (!startDate || !endDate) {
-        alert("Please fill in the start and end dates before adding a milestone.");
-        return;
-    }
-
-    if (new Date(tillDate) < new Date(startDate) || new Date(tillDate) > new Date(endDate)) {
-        alert("Till Date must be between Start Date and End Date.");
-        return;
-    }
-
-    if (milestoneName && milestoneCost && tillDate && difficulty) {
-        setProject((prevProject) => ({
-            ...prevProject,
-            milestones: [
-                ...prevProject.milestones,
-                {
-                    name: milestoneName,
-                    cost: milestoneCost,
-                    tillDate: tillDate,
-                    difficulty: difficulty,
-                },
-            ],
-        }));
-
-        // Clear the input fields after adding the milestone
-        if (milestoneRef.current) milestoneRef.current.value = "";
-        if (milestoneCostRef.current) milestoneCostRef.current.value = "";
-        if (tillDateRef.current) tillDateRef.current.value = "";
-        setDifficulty("");
-        console.log(project);
+    if (githubLinkPattern.test(project.githubLink)) {
+      return true;
     } else {
-        alert("Please fill in all milestone fields.");
+      toast?.showMessage("Invalid GitHub link.", "warning");
+      return false;
     }
-};
+  };
 
-  const handleSubmit = () => {
-    // Handle the submit logic here
-    const title = titleRef.current?.value;
-    const category = categoryRef.current?.value;
-    const description = descriptionRef.current?.value;
-    const githubLink = githubLinkRef.current?.value;
-    const startDate = startDateRef.current?.value;
-    const endDate = endDateRef.current?.value;
-    const totalAmount = totalAmountRef.current?.value;
+  const validateProjectDetails = () => {
+    console.log(project);
 
-    if (!title || !category || !description || !githubLink || !startDate || !endDate || !totalAmount) {
-        alert("Please fill in all fields.");
-        return;
+    if (
+      project.title &&
+      project.category &&
+      project.description &&
+      project.githubLink &&
+      project.startDate &&
+      project.endDate
+    ) {
+      if (validateGithubLink()) {
+        return true;
+      } else {
+        toast?.showMessage("Invalid Github link!", "alert");
+        return false;
+      }
     }
+    toast?.showMessage("Please fill all project details.", "warning");
+  };
 
-    if (title.length > 30 || category.length > 30) {
-        alert("Title and Category must be less than 30 characters.");
-        return;
+  const validateMilestoneDetails = () => {
+    if (
+      tempMilestone.name &&
+      tempMilestone.cost &&
+      tempMilestone.tillDate &&
+      difficulty
+    ) {
+      if (/^[0-9]+$/.test(tempMilestone.cost.toString())) {
+        return true;
+      }
+      toast?.showMessage("Incorrect Milestone Cost.", "alert");
+      return false;
     }
+    toast?.showMessage("Please fill all milestone details.", "warning");
+  };
 
-    if (description.length > 100) {
-        alert("Description must be less than 100 characters.");
-        return;
+  const validateProjectDates = () => {
+    if (
+      new Date().toISOString().split("T")[0] <
+        new Date(project.startDate).toISOString().split("T")[0] &&
+      new Date(project.startDate) < new Date(project.endDate)
+    ) {
+      if (currentMileStoneIndex > 0) {
+        if (
+          new Date(project.startDate) <
+            new Date(project.milestones[0].tillDate) &&
+          new Date(project.milestones[currentMileStoneIndex - 1].tillDate) <
+            new Date(project.endDate)
+        ) {
+          return true;
+        } else {
+          toast?.showMessage(
+            "Milestone date does not align with other dates.",
+            "alert"
+          );
+          return false;
+        }
+      }
+      return true;
     }
+    toast?.showMessage("Invalid Project Dates", "alert");
+    return false;
+  };
 
-    if (isNaN(parseFloat(totalAmount))) {
-        alert("Total Amount must be a valid number.");
-        return;
+  const validateMilestoneDate = () => {
+    if (
+      new Date(project.startDate) < new Date(tempMilestone.tillDate) &&
+      new Date(tempMilestone.tillDate) < new Date(project.endDate)
+    ) {
+      if (currentMileStoneIndex > 0) {
+        if (
+          new Date(project.milestones[currentMileStoneIndex - 1].tillDate) <
+          new Date(tempMilestone.tillDate)
+        ) {
+          return true;
+        } else {
+          toast?.showMessage(
+            "Milestone date does not align with other dates.",
+            "alert"
+          );
+          return false;
+        }
+      }
+      return true;
     }
+    toast?.showMessage("Invalid Milestone Dates", "alert");
+    return false;
+  };
 
-    if (new Date(startDate) >= new Date(endDate)) {
-        alert("Start Date must be earlier than End Date.");
-        return;
+  const handleAddMilestoneButton = () => {
+    if (currentMileStoneIndex < 10) {
+      if (validateProjectDetails() && validateProjectDates()) {
+        if (validateMilestoneDetails() && validateMilestoneDate()) {
+          setProject((prevProject) => {
+            const updatedMilestones = [...prevProject.milestones];
+            updatedMilestones[currentMileStoneIndex] = {
+              ...tempMilestone,
+            };
+            return {
+              ...prevProject,
+              totalAmount: prevProject.totalAmount + tempMilestone.cost,
+              milestones: updatedMilestones,
+            };
+          });
+          setCurrentMileStoneIndex(currentMileStoneIndex + 1);
+          resetMilestoneDetails();
+          toast?.showMessage("Milestone Added!", "info");
+          console.log(project);
+        }
+      }
+    } else {
+      toast?.showMessage("Max 10 milestones are allowed.", "warning");
     }
+  };
 
-    setProject({
-        ...project,
-        title,
-        category,
-        description,
-        githubLink,
-        startDate,
-        endDate,
-        totalAmount,
+  const handleSubmitButton = () => {
+    if (currentMileStoneIndex !== 0) {
+      if (validateProjectDetails() && validateProjectDates()) {
+        toast?.showMessage("Project submited.", "info");
+        resetMilestoneDetails();
+        resetProjectDetails();
+        console.log(project);
+      }
+    } else {
+      toast?.showMessage("Min 1 milestone required.", "warning");
+    }
+  };
+
+  const resetMilestoneDetails = () => {
+    if (milestoneRef.current) milestoneRef.current.value = "";
+    if (milestoneCostRef.current) milestoneCostRef.current.value = "";
+    if (tillDateRef.current) tillDateRef.current.value = "";
+    setDifficulty("");
+    setTempMilestone({
+      name: "",
+      cost: 0,
+      tillDate: "",
+      difficulty: "",
     });
-    console.log("Project submitted:", project);
+  };
+
+  const resetProjectDetails = () => {
+    // Clear the input fields after submitting the project
+    if (titleRef.current) titleRef.current.value = "";
+    if (categoryRef.current) categoryRef.current.value = "";
+    if (descriptionRef.current) descriptionRef.current.value = "";
+    if (githubLinkRef.current) githubLinkRef.current.value = "";
+    if (startDateRef.current) startDateRef.current.value = "";
+    if (endDateRef.current) endDateRef.current.value = "";
+    setCurrentMileStoneIndex(0);
+    setProject({
+      title: "",
+      category: "",
+      description: "",
+      githubLink: "",
+      startDate: "",
+      endDate: "",
+      totalAmount: 0,
+      milestones: [
+        {
+          name: "",
+          cost: 0,
+          tillDate: "",
+          difficulty: "",
+        },
+      ],
+    });
   };
 
   return (
@@ -204,31 +323,59 @@ const handleAddMilestone = () => {
         <div>
           <InputField
             ref={titleRef}
+            max={30}
             title="Project Title"
             type="text"
-            placeholder="Title"
+            placeholder="30 characters"
             icon={MdDriveFileRenameOutline}
+            onChange={(e) => {
+              setProject((prevProject) => ({
+                ...prevProject,
+                title: e.target.value,
+              }));
+            }}
           />
           <InputField
             ref={categoryRef}
             title="Category"
             type="text"
-            placeholder="category"
+            max={30}
+            placeholder="30 Characters"
             icon={MdCategory}
+            onChange={(e) => {
+              setProject((prevProject) => ({
+                ...prevProject,
+                category: e.target.value,
+              }));
+            }}
           />
           <InputField
             ref={descriptionRef}
             title="Description"
             type="text"
-            placeholder="Max. 100 Characters"
+            max={100}
+            placeholder="100 Characters"
             icon={CgDetailsMore}
+            onChange={(e) => {
+              setProject((prevProject) => ({
+                ...prevProject,
+                description: e.target.value,
+              }));
+            }}
           />
           <InputField
             ref={githubLinkRef}
             title="Github Link"
             type="url"
+            pattern="^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+\/?$"
             placeholder="link"
             icon={FaLink}
+            onChange={(e) => {
+              setProject((prevProject) => ({
+                ...prevProject,
+                githubLink: e.target.value,
+              }));
+            }}
           />
           <InputField
             ref={startDateRef}
@@ -236,6 +383,12 @@ const handleAddMilestone = () => {
             type="date"
             placeholder=""
             icon={MdDateRange}
+            onChange={(e) => {
+              setProject((prevProject) => ({
+                ...prevProject,
+                startDate: e.target.value,
+              }));
+            }}
           />
           <InputField
             ref={endDateRef}
@@ -243,27 +396,39 @@ const handleAddMilestone = () => {
             type="date"
             placeholder=""
             icon={MdDateRange}
-          />
-          <InputField
-            ref={totalAmountRef}
-            title="Total Amount"
-            type="number"
-            placeholder="in ethers"
-            icon={GiTakeMyMoney}
+            onChange={(e) => {
+              setProject((prevProject) => ({
+                ...prevProject,
+                endDate: e.target.value,
+              }));
+            }}
           />
           <InputField
             ref={milestoneRef}
             title="Milestone"
             type="text"
             placeholder="Heading"
+            max={30}
             icon={LuMilestone}
+            onChange={(e) => {
+              setTempMilestone((prevTempMilestone) => ({
+                ...prevTempMilestone,
+                name: e.target.value,
+              }));
+            }}
           />
           <InputField
             ref={milestoneCostRef}
             title="Milestone Cost"
-            type="text"
+            type="number"
             placeholder="in ethers"
             icon={TbPigMoney}
+            onChange={(e) => {
+              setTempMilestone((prevTempMilestone) => ({
+                ...prevTempMilestone,
+                cost: parseFloat(e.target.value),
+              }));
+            }}
           />
           <InputField
             ref={tillDateRef}
@@ -271,6 +436,12 @@ const handleAddMilestone = () => {
             type="date"
             placeholder=""
             icon={MdDateRange}
+            onChange={(e) => {
+              setTempMilestone((prevTempMilestone) => ({
+                ...prevTempMilestone,
+                tillDate: e.target.value,
+              }));
+            }}
           />
           <div className="flex flex-col gap-2">
             <h3 className="font-body text-lg">Difficulty Level</h3>
@@ -279,49 +450,67 @@ const handleAddMilestone = () => {
                 <input
                   type="radio"
                   name="difficulty"
-                  value="easy"
-                  checked={difficulty === "easy"}
-                  onChange={(e) => setDifficulty(e.target.value)}
+                  value="Beginner"
+                  checked={difficulty === "Beginner"}
+                  onChange={(e) => {
+                    setDifficulty(e.target.value);
+                    setTempMilestone((prevTempMilestone) => ({
+                      ...prevTempMilestone,
+                      difficulty: e.target.value,
+                    }));
+                  }}
                 />
-                Easy
+                Beginner
               </label>
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
                   name="difficulty"
-                  value="moderate"
-                  checked={difficulty === "moderate"}
-                  onChange={(e) => setDifficulty(e.target.value)}
+                  value="Intermediate"
+                  checked={difficulty === "Intermediate"}
+                  onChange={(e) => {
+                    setDifficulty(e.target.value);
+                    setTempMilestone((prevTempMilestone) => ({
+                      ...prevTempMilestone,
+                      difficulty: e.target.value,
+                    }));
+                  }}
                 />
-                Moderate
+                Intermediate
               </label>
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
                   name="difficulty"
-                  value="difficult"
-                  checked={difficulty === "difficult"}
-                  onChange={(e) => setDifficulty(e.target.value)}
+                  value="Advanced"
+                  checked={difficulty === "Advanced"}
+                  onChange={(e) => {
+                    setDifficulty(e.target.value);
+                    setTempMilestone((prevTempMilestone) => ({
+                      ...prevTempMilestone,
+                      difficulty: e.target.value,
+                    }));
+                  }}
                 />
-                Difficult
+                Advanced
               </label>
             </div>
           </div>
 
           <div className="flex justify-around gap-4 mt-4">
             <button
-              onClick={handleAddMilestone}
+              onClick={handleAddMilestoneButton}
               title="Add Milestone"
               type="button"
-              className="flex gap-4 items-center justify-center w-1/2 p-2 py-2 rounded-xl shadow-lg shadow-gray-700"
+              className="flex gap-4 items-center justify-center w-1/2 p-2 py-2 rounded-xl shadow-lg shadow-gray-800"
             >
               <IoMdAdd /> Milestone
             </button>
             <button
-              onClick={handleSubmit}
+              onClick={handleSubmitButton}
               title="Submit Project"
               type="button"
-              className="flex gap-4 items-center justify-center w-1/2 p-2 py-2 rounded-xl shadow-lg shadow-gray-700"
+              className="flex gap-4 items-center justify-center w-1/2 p-2 py-2 rounded-xl shadow-lg shadow-gray-800"
             >
               <IoSend /> Submit
             </button>

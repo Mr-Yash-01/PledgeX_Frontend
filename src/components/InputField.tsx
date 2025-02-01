@@ -27,10 +27,13 @@ interface InputFieldProps {
   placeholder?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   icon?: IconType;
   id?: string;
   containerId?: string;
   ref? : React.Ref<HTMLInputElement>
+  max?: number;
+  pattern?: string;
 }
 
 /**
@@ -51,21 +54,24 @@ interface InputFieldProps {
 export default function InputField({
   title = "Title",
   type = "text",
+  max,
   className = "",
   placeholder = "placeholder",
   value,
   onChange,
+  onKeyDown,
   icon: Icon = IoMdMail,
   id,
   containerId,
-  ref
+  ref,
+  pattern
 }: InputFieldProps) {
   return (
     <div className="flex flex-col my-4">
       <h4 className="font-body text-lg font-medium md:text-xl">{title}</h4>
       <div
         id={containerId || undefined}
-        className="flex flex-row items-center shadow-lg shadow-zinc-900 rounded px-4"
+        className="flex flex-row items-center shadow-md shadow-zinc-800 rounded px-4"
       >
         <Icon />
         <input
@@ -75,6 +81,9 @@ export default function InputField({
           className={`w-full p-2 ${className} focus:outline-none placeholder:font-body placeholder:text-gray-500`}
           placeholder={placeholder}
           value={value}
+          maxLength={max}
+          onKeyDown={onKeyDown}
+          pattern={pattern}
           onChange={onChange}
           onBlur={(e) => {
             const parent = e.currentTarget.parentElement;

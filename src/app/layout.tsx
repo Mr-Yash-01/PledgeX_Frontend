@@ -1,7 +1,7 @@
 'use client';
 
+import { ToastProvider } from "@/store/ToastContext";
 import "./globals.css";
-import { RecoilRoot } from "recoil";
 
 
 
@@ -15,9 +15,9 @@ export default function RootLayout({
       <body
         className={`antialiased`}
       >
-        <RecoilRoot>
+        <ToastProvider>
           {children}
-        </RecoilRoot>
+        </ToastProvider>
       </body>
     </html>
   );
