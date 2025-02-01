@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #181818; /* Set default background to #181818 */
+  --foreground: #cccccc; /* Set default text color to #cccccc */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #181818; /* Dark mode background */
+    --foreground: #cccccc;  /* Dark mode text color */
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'IBM Plex Mono', monospace; /* Global font */
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) grayscale(100%) contrast(100%) brightness(100%);
+}
+
