@@ -24,3 +24,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1) grayscale(100%) contrast(100%) brightness(100%);
 }
 
+.milestone-red {
+  box-shadow: 0 0 12px #f56565; /* Red 500 */
+}
+
+.milestone-yellow {
+  box-shadow: 0 0 12px #ecc94b; /* Yellow 500 */
+}
+
+.milestone-green {
+  box-shadow: 0 0 12px #48bb78; /* Green 500 */
+}
+

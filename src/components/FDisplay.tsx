@@ -3,6 +3,7 @@ import { IoSearchSharp, IoSend } from "react-icons/io5";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
 import InputField from "./InputField";
 import {
+  MdCatchingPokemon,
   MdCategory,
   MdDateRange,
   MdDriveFileRenameOutline,
@@ -12,6 +13,9 @@ import { FaLink } from "react-icons/fa";
 import { TbPigMoney } from "react-icons/tb";
 import { LuMilestone } from "react-icons/lu";
 import { ToastContext } from "@/store/ToastContext";
+import Title from "./Title";
+import { VscGithub } from "react-icons/vsc";
+import { SiEthereum } from "react-icons/si";
 
 interface FDisplayProps {
   text: string;
@@ -71,6 +75,27 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   const milestoneRef = useRef<HTMLInputElement>(null);
   const milestoneCostRef = useRef<HTMLInputElement>(null);
   const tillDateRef = useRef<HTMLInputElement>(null);
+
+  const dummy = [
+    {
+      name: "Milestone 1",
+      cost: 1,
+      tillDate: "2021-10-10",
+      difficulty: "Beginner",
+    },
+    {
+      name: "Milestone 2",
+      cost: 2,
+      tillDate: "2021-10-20",
+      difficulty: "Intermediate",
+    },
+    {
+      name: "Milestone 3",
+      cost: 3,
+      tillDate: "2021-10-30",
+      difficulty: "Advanced",
+    },
+  ];
 
   const validateGithubLink = () => {
     return true;
@@ -367,7 +392,6 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
             ref={githubLinkRef}
             title="Github Link"
             type="url"
-            pattern="^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+\/?$"
             placeholder="link"
             icon={FaLink}
             onChange={(e) => {
@@ -515,6 +539,72 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
               <IoSend /> Submit
             </button>
           </div>
+
+          {/* preview */}
+          {project.milestones.length > -1 ? (
+            <div className="shadow-2xl shadow-gray-700 rounded-2xl mt-8">
+              <div className="py-2">
+                <h2 className="text-xl px-4 ">Preview</h2>
+                <hr className="w-full opacity-50"></hr>
+              </div>
+              <div className="px-4">
+                <div className=" mt-2">
+                  <p className="flex items-center justify-between gap-4">
+                    <span className="text-2xl font-bold">{project.title}</span>
+                    <a
+                      href={project.githubLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cursor-pointer"
+                    >
+                      <VscGithub className="w-6 h-6"></VscGithub>{" "}
+                    </a>
+                  </p>
+                  <h3 className="text-lg flex gap-2 items-center">
+                    <MdCategory /> {project.category}
+                  </h3>
+                  <p className="text-sm">{project.description}</p>
+                  <h4 className="text-lg">From: {project.startDate}</h4>
+                  <h4 className="text-lg">To: {project.endDate}</h4>
+                  <h4 className="text-lg">Total cost: {project.totalAmount}</h4>
+                </div>
+                <div className="flex flex-col flex-grow min-h-fit py-4">
+                  <h1 className="text-2xl underline underline-offset-4 mb-2">Work Flow</h1>
+                  {project.milestones.map((milestone, index) => {
+                    return (
+                      <div key={index} className="flex justify-evenly h-fit gap-2 ">
+                        <div className="w-28 flex flex-col justify-end">
+                          <h3 className="text-lg">{milestone.name}</h3>
+                          <h4 className="text-sm">{milestone.difficulty}</h4>
+                        </div>
+                        <div title={`${milestone.difficulty} level`}  className="flex flex-col cursor-pointer items-center">
+                          <div className="w-1 h-20 rounded-t bg-[#cccccc]"></div>
+                          <div
+                            className={`rounded-full h-8 w-8 ${
+                              milestone.difficulty === "Beginner"
+                                ? "milestone-green"
+                                : milestone.difficulty === "Intermediate"
+                                ? "milestone-yellow"
+                                : "milestone-red"
+                            } p-[2px] flex items-center justify-center`}
+                          >
+                            <div className=" bg-[#cccccc] rounded-full h-4 w-4"></div>
+                          </div>
+                        </div>
+                        <div className="w-28 pl-2 flex flex-col justify-end">
+                          <h3 className="text-lg flex items-center gap-1">
+                            <SiEthereum />
+                            {milestone.cost}
+                          </h3>
+                          <h4 className="text-sm">{milestone.tillDate}</h4>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       )}
     </div>
