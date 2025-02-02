@@ -38,7 +38,7 @@ export default function Dashboard({children}: {children: React.ReactNode}) {
                 <img src="/LogoWhite.svg" alt="logo" className="w-1/3 md:w-1/4 lg:w-1/12" />
                 
                 {/* Account Button */}
-                <img src="/file.svg" ref={imageRef} onClick={toggleDropdown} title="Account" alt="avatar" className="w-8 h-8 rounded-full cursor-pointer outline outline-1 lg:w-12 lg:h-12" />
+                {/* <img src="/file.svg" ref={imageRef} onClick={toggleDropdown} title="Account" alt="avatar" className="w-8 h-8 rounded-full cursor-pointer outline outline-1 lg:w-12 lg:h-12" /> */}
 
                 {/* Dropdown Menu */}
                 {dropdownVisible && (

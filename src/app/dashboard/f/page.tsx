@@ -3,19 +3,14 @@
 import FDisplay from "@/components/FDisplay";
 import KeyMoney from "@/components/KeyMoney";
 import ProjectCard from "@/components/ProjectCard";
-import { ToastContext } from "@/store/ToastContext";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { FaInbox } from "react-icons/fa";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
 
 export default function F() {
-  const [currectDisplay, setCurrentDisplay] = useState(false);
-  const toast = useContext(ToastContext);
-  
+  const [currectDisplay, setCurrentDisplay] = useState(false);  
 
   const handleSpeedDialButton = () => {
-    console.log("Speed Dial button clicked");
-    toast?.showMessage("Speed Dial button clicked",'alert');
     setCurrentDisplay(!currectDisplay);
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { IoSearchSharp, IoSend } from "react-icons/io5";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
 import InputField from "./InputField";
@@ -16,6 +16,7 @@ import { ToastContext } from "@/store/ToastContext";
 import { VscGithub, VscPreview } from "react-icons/vsc";
 import { SiEthereum } from "react-icons/si";
 import axios from "axios";
+import firebaseApp from "@/services/firebase";
 
 interface FDisplayProps {
   text: string;
@@ -23,7 +24,7 @@ interface FDisplayProps {
   list?: string[];
 }
 
-const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
+const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   const [isSearchEnabled, setIsSearchEnabled] = useState(false);
   const [searchText, setSearchText] = useState("");
 
@@ -68,7 +69,7 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     statistics: {
       totalAmount: 0,
       averagePerMilestone: 0,
-      maxPayable: 0,
+      maxPayable: Number.MAX_VALUE,
       minPayable: 0,
       paymentDone: 0,
       milestonesCompleted: 0,
@@ -104,27 +105,6 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   const milestoneRef = useRef<HTMLInputElement>(null);
   const milestoneCostRef = useRef<HTMLInputElement>(null);
   const tillDateRef = useRef<HTMLInputElement>(null);
-
-  const dummy = [
-    {
-      name: "Milestone 1",
-      cost: 1,
-      tillDate: "2021-10-10",
-      difficulty: "Beginner",
-    },
-    {
-      name: "Milestone 2",
-      cost: 2,
-      tillDate: "2021-10-20",
-      difficulty: "Intermediate",
-    },
-    {
-      name: "Milestone 3",
-      cost: 3,
-      tillDate: "2021-10-30",
-      difficulty: "Advanced",
-    },
-  ];
 
   const validateGithubLink = () => {
     return true;
@@ -311,7 +291,7 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
 
       const userDataObj = JSON.parse(userData);
       const freelancerEmail = userDataObj.email;
-      console.log(freelancerEmail);
+      const freelanceruid = userDataObj.uid;
       
       if (!freelancerEmail) {
         throw new Error("Freelancer email not found");
@@ -321,6 +301,7 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
         projectData: project,
         clientEmail: clientEmail,
         freelancerEmail: freelancerEmail,
+        freelanceruid: freelanceruid
       });
 
       if (response.data.msg === "equal") {
@@ -411,6 +392,35 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     });
   };
 
+  useEffect(() => {
+    // Adjust the import based on your firebase config file
+
+    const fetchProjects = async () => {
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        throw new Error("User data not found");
+      }
+
+      const userDataObj = JSON.parse(userData);
+      const role = userDataObj.role;
+      const uid = userDataObj.uid;
+
+      if (role && uid) {
+        const response = await axios.get(`http://localhost:4000/fetchProjects`, {
+          params : {
+            role: role,
+            uid: uid
+          }
+        });
+
+        console.log(response.data);
+        // You can set the fetched projects to state or handle them as needed
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
   return (
     <div className="transition-all duration-500 ease-in-out">
       {isSearchEnabled ? (
@@ -472,9 +482,10 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
           ) : null}
         </div>
       )}
+
       {/* form */}
       {component ? (
-        component
+        null
       ) : (
         <div>
           <InputField
@@ -482,7 +493,7 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
             max={30}
             title="Client Email"
             type="email"
-            placeholder="abc.def@ghi.com"
+            placeholder="abc@ghi.com"
             icon={MdEmail}
             onChange={(e) => {
               setClientEmail(e.target.value);
@@ -762,4 +773,4 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   );
 };
 
-export default CDisplay;
+export default FDisplay;
