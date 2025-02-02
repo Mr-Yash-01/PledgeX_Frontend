@@ -10,12 +10,14 @@ import { IoMdMail } from "react-icons/io";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { signInWithGoogle, signInWithGithub } from "@/services/auth";
+import { useRouter } from "next/navigation";
 
 
 export default function Signin() {
     const [isPasswordValid, setIsPasswordValid] = useState(false);
     const [isEmailValid, setIsEmailValid] = useState(false);
     const [isConnectButtonEnabled, setIsConnectButtonEnabled] = useState(false);
+    const router = useRouter();
     
 
     useEffect(() => {
@@ -73,12 +75,22 @@ export default function Signin() {
                     if (response.status === 200) {
                         // Redirect to dashboard
                         const userData = response.data.user;
+                        console.log(userData);
+
+                        localStorage.setItem('userData', JSON.stringify(userData));
                         
+
                         if (userData.role === 'Clients') {
-                            window.location.href = "/dashboard/c";
+                            router.push("/dashboard/c");
                         } else {
-                            window.location.href = "/dashboard/f";
+                            router.push("/dashboard/f");
                         }
+                        
+                        // if (userData.role === 'Clients') {
+                        //     window.location.href = "/dashboard/c";
+                        // } else {
+                        //     window.location.href = "/dashboard/f";
+                        // }
 
                     } else {
                         console.log("User does not exist");

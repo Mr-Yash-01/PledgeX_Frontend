@@ -3,19 +3,19 @@ import { IoSearchSharp, IoSend } from "react-icons/io5";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
 import InputField from "./InputField";
 import {
-  MdCatchingPokemon,
   MdCategory,
   MdDateRange,
   MdDriveFileRenameOutline,
+  MdEmail,
 } from "react-icons/md";
 import { CgDetailsMore } from "react-icons/cg";
 import { FaLink } from "react-icons/fa";
 import { TbPigMoney } from "react-icons/tb";
 import { LuMilestone } from "react-icons/lu";
 import { ToastContext } from "@/store/ToastContext";
-import Title from "./Title";
-import { VscGithub } from "react-icons/vsc";
+import { VscGithub, VscPreview } from "react-icons/vsc";
 import { SiEthereum } from "react-icons/si";
+import axios from "axios";
 
 interface FDisplayProps {
   text: string;
@@ -32,6 +32,7 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     cost: number;
     tillDate: string;
     difficulty: string;
+    status: boolean
   }
 
   interface Project {
@@ -41,7 +42,19 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     githubLink: string;
     startDate: string;
     endDate: string;
-    totalAmount: number;
+    statistics: {
+      totalAmount: number;
+      averagePerMilestone: number;
+      maxPayable: number;
+      minPayable: number;
+      paymentDone: number;
+      milestonesCompleted: number;
+      paidAmount: number;
+      countOfDifficulties: {
+        beginner: number;
+        intermediate: number;
+        advanced: number;}
+    };
     milestones: Milestone[];
   }
 
@@ -52,7 +65,20 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     githubLink: "",
     startDate: "",
     endDate: "",
-    totalAmount: 0,
+    statistics: {
+      totalAmount: 0,
+      averagePerMilestone: 0,
+      maxPayable: 0,
+      minPayable: 0,
+      paymentDone: 0,
+      milestonesCompleted: 0,
+      paidAmount: 0,
+      countOfDifficulties: {
+        beginner: 0,
+        intermediate: 0,
+        advanced: 0,
+      } 
+    },
     milestones: [],
   });
   const [tempMilestone, setTempMilestone] = useState<Milestone>({
@@ -60,12 +86,15 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     cost: 0,
     tillDate: "",
     difficulty: "",
+    status: false
   });
   const [difficulty, setDifficulty] = useState("");
   const [currentMileStoneIndex, setCurrentMileStoneIndex] = useState(0);
+  const [clientEmail, setClientEmail] = useState("");
   const toast = useContext(ToastContext);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const clientRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
@@ -110,10 +139,16 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     }
   };
 
+  const validateClientEmail = () => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(clientEmail);
+  };
+
   const validateProjectDetails = () => {
     console.log(project);
 
     if (
+      clientEmail &&
       project.title &&
       project.category &&
       project.description &&
@@ -121,12 +156,18 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
       project.startDate &&
       project.endDate
     ) {
-      if (validateGithubLink()) {
-        return true;
+      if (validateClientEmail()) {
+        if (validateGithubLink()) {
+          return true;
+        } else {
+          toast?.showMessage("Invalid Github link!", "alert");
+          return false;
+        }
       } else {
-        toast?.showMessage("Invalid Github link!", "alert");
+        toast?.showMessage("Invalid Client Email Format!", "alert");
         return false;
       }
+      
     }
     toast?.showMessage("Please fill all project details.", "warning");
   };
@@ -200,6 +241,41 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     return false;
   };
 
+  const handleStatistics = () => {
+    setProject((prevProject) => ({
+      ...prevProject,
+      statistics: {
+        ...prevProject.statistics,
+        totalAmount: prevProject.statistics.totalAmount + tempMilestone.cost,
+        averagePerMilestone:
+          (prevProject.statistics.totalAmount + tempMilestone.cost) /
+          (currentMileStoneIndex + 1),
+        maxPayable:
+          tempMilestone.cost > prevProject.statistics.maxPayable
+            ? tempMilestone.cost
+            : prevProject.statistics.maxPayable,
+        minPayable:
+          tempMilestone.cost < prevProject.statistics.minPayable
+            ? tempMilestone.cost
+            : prevProject.statistics.minPayable,
+        countOfDifficulties: {
+          beginner:
+            difficulty === "Beginner"
+              ? prevProject.statistics.countOfDifficulties.beginner + 1
+              : prevProject.statistics.countOfDifficulties.beginner,
+          intermediate:
+            difficulty === "Intermediate"
+              ? prevProject.statistics.countOfDifficulties.intermediate + 1
+              : prevProject.statistics.countOfDifficulties.intermediate,
+          advanced:
+            difficulty === "Advanced"
+              ? prevProject.statistics.countOfDifficulties.advanced + 1
+              : prevProject.statistics.countOfDifficulties.advanced,
+        },
+      },
+    }));
+  };
+
   const handleAddMilestoneButton = () => {
     if (currentMileStoneIndex < 10) {
       if (validateProjectDetails() && validateProjectDates()) {
@@ -211,10 +287,10 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
             };
             return {
               ...prevProject,
-              totalAmount: prevProject.totalAmount + tempMilestone.cost,
               milestones: updatedMilestones,
             };
           });
+          handleStatistics();;
           setCurrentMileStoneIndex(currentMileStoneIndex + 1);
           resetMilestoneDetails();
           toast?.showMessage("Milestone Added!", "info");
@@ -226,13 +302,60 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     }
   };
 
+  const uploadToFirebase = async () => {
+    try {
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        throw new Error("User data not found");
+      }
+
+      const userDataObj = JSON.parse(userData);
+      const freelancerEmail = userDataObj.email;
+      console.log(freelancerEmail);
+      
+      if (!freelancerEmail) {
+        throw new Error("Freelancer email not found");
+      }
+
+      const response = await axios.post("http://localhost:4000/user/f/sp", {
+        projectData: project,
+        clientEmail: clientEmail,
+        freelancerEmail: freelancerEmail,
+      });
+
+      if (response.data.msg === "equal") {
+        toast?.showMessage("Client and freelancer emails cannot be the same.", "alert");
+        if (clientRef.current) {
+          clientRef.current.value = "";
+          clientRef.current.focus();
+        }
+      } else if (response.data.msg === "notExist") {
+        toast?.showMessage("Client does not exist.", "alert");
+        if (clientRef.current) {
+          clientRef.current.value = "";
+          clientRef.current.focus();
+        }
+      } else{
+        toast?.showMessage("Project uploaded successfully", "info");
+        resetMilestoneDetails();
+        resetProjectDetails();
+      }
+
+    } catch (error) {
+      console.error("Error uploading doc:", error);
+      toast?.showMessage("Internal Server Error", "error");
+    }
+  };
+
   const handleSubmitButton = () => {
     if (currentMileStoneIndex !== 0) {
       if (validateProjectDetails() && validateProjectDates()) {
-        toast?.showMessage("Project submited.", "info");
-        resetMilestoneDetails();
-        resetProjectDetails();
-        console.log(project);
+        try {
+          uploadToFirebase();
+        } catch (error) {
+          console.error("Error uploading doc:", error);
+          toast?.showMessage("Internal Server Error", "error"); 
+        }
       }
     } else {
       toast?.showMessage("Min 1 milestone required.", "warning");
@@ -249,11 +372,13 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
       cost: 0,
       tillDate: "",
       difficulty: "",
+      status: false
     });
   };
 
   const resetProjectDetails = () => {
     // Clear the input fields after submitting the project
+    if (clientRef.current) clientRef.current.value = "";
     if (titleRef.current) titleRef.current.value = "";
     if (categoryRef.current) categoryRef.current.value = "";
     if (descriptionRef.current) descriptionRef.current.value = "";
@@ -268,15 +393,21 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
       githubLink: "",
       startDate: "",
       endDate: "",
-      totalAmount: 0,
-      milestones: [
-        {
-          name: "",
-          cost: 0,
-          tillDate: "",
-          difficulty: "",
-        },
-      ],
+      statistics: {
+        totalAmount: 0,
+        averagePerMilestone: 0,
+        maxPayable: 0,
+        minPayable: 0,
+        paymentDone: 0,
+        milestonesCompleted: 0,
+        paidAmount: 0,
+        countOfDifficulties: {
+          beginner: 0,
+          intermediate: 0,
+          advanced: 0,
+      } 
+    },
+    milestones: [],
     });
   };
 
@@ -346,6 +477,17 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
         component
       ) : (
         <div>
+          <InputField
+            ref={clientRef}
+            max={30}
+            title="Client Email"
+            type="email"
+            placeholder="abc.def@ghi.com"
+            icon={MdEmail}
+            onChange={(e) => {
+              setClientEmail(e.target.value);
+            }}
+          />
           <InputField
             ref={titleRef}
             max={30}
@@ -543,10 +685,11 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
           {/* preview */}
           {project.milestones.length > -1 ? (
             <div className="shadow-2xl shadow-gray-700 rounded-2xl mt-8">
-              <div className="py-2">
-                <h2 className="text-xl px-4 ">Preview</h2>
-                <hr className="w-full opacity-50"></hr>
+              <div className="p-2 px-4 gap-2 flex items-center">
+                <VscPreview></VscPreview>
+                <h2 className="text-xl">Preview</h2>
               </div>
+                <hr className="w-full opacity-50"></hr>
               <div className="px-4">
                 <div className=" mt-2">
                   <p className="flex items-center justify-between gap-4">
@@ -566,7 +709,15 @@ const CDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
                   <p className="text-sm">{project.description}</p>
                   <h4 className="text-lg">From: {project.startDate}</h4>
                   <h4 className="text-lg">To: {project.endDate}</h4>
-                  <h4 className="text-lg">Total cost: {project.totalAmount}</h4>
+                  <h4 className="text-lg">Total cost: {project.statistics.totalAmount}</h4>
+                  <h4 className="text-lg">Average per milestone: {project.statistics.averagePerMilestone}</h4>
+                  <h4 className="text-lg">Max payable: {project.statistics.maxPayable}</h4>
+                  <h4 className="text-lg">Min payable: {project.statistics.minPayable}</h4>
+                  <h4 className="text-lg">Count of difficulties:</h4>
+                  <h4 className="text-lg">Beginner: {project.statistics.countOfDifficulties.beginner}</h4>
+                  <h4 className="text-lg">Intermediate: {project.statistics.countOfDifficulties.intermediate}</h4>
+                  <h4 className="text-lg">Advanced: {project.statistics.countOfDifficulties.advanced}</h4>
+
                 </div>
                 <div className="flex flex-col flex-grow min-h-fit py-4">
                   <h1 className="text-2xl underline underline-offset-4 mb-2">Work Flow</h1>
