@@ -8,7 +8,7 @@ import { FaInbox } from "react-icons/fa";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
 
 export default function F() {
-  const [currectDisplay, setCurrentDisplay] = useState(false);  
+  const [currectDisplay, setCurrentDisplay] = useState(true);  
 
   const handleSpeedDialButton = () => {
     setCurrentDisplay(!currectDisplay);

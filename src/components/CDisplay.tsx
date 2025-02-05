@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IoSearchSharp } from 'react-icons/io5';
 import { IoMdClose } from 'react-icons/io';
+import axios from 'axios';
+import ProjectCard from './ProjectCard';
+
+interface Project {
+    id: string;
+    // Add other project properties here
+}
 
 interface CDisplayProps {
     text: string;
@@ -9,15 +16,49 @@ interface CDisplayProps {
 }
 
 const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
-
     const [isSearchEnabled, setIsSearchEnabled] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const [projects, setProjects] = useState<Project[]>([]);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                throw new Error("User data not found");
+            }
+
+            const userDataObj = JSON.parse(userData);
+            const role = userDataObj.role;
+            const uid = userDataObj.uid;
+
+            if (role && uid) {
+                try {
+                    const response = await axios.get(`http://localhost:4000/fetchProjects`, {
+                        params: {
+                            role: role,
+                            uid: uid
+                        }
+                    });
+
+                    console.log(response.data);
+                    setProjects(response.data.projects);
+                } catch (error) {
+                    console.error("Error fetching projects:", error);
+                }
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
+    
 
     return (
         <div className='transition-all duration-500 ease-in-out'>
             {
                 isSearchEnabled ? (
-                    <div className="flex flex-row border border-[#cccccc] items-center shadow-lg shadow-zinc-900 rounded-2xl px-4 py-2 gap-2">
+                    <div>
+                        <div className="flex flex-row border border-[#cccccc] items-center shadow-lg shadow-zinc-900 rounded-2xl px-4 py-2 gap-2">
                         <IoSearchSharp />
                         <input
                             id='freelancerSearch'
@@ -41,9 +82,10 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
                                 color: "var(--foreground)",
                             }}
                         />
-                        <button title='close' type='button' onClick={() => {setIsSearchEnabled(!isSearchEnabled); setSearchText('')}}>
-                            <IoMdClose/>
+                        <button title='close' type='button' onClick={() => { setIsSearchEnabled(!isSearchEnabled); setSearchText('') }}>
+                            <IoMdClose />
                         </button>
+                    </div>
                     </div>
                 ) : (
                     <div className="flex items-center gap-4 justify-between px-1">
@@ -56,7 +98,33 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
                     </div>
                 )
             }
-            {component}
+            
+
+
+            {text === 'Projects' ? (
+                <div className="mt-4">
+                {projects.map((proj, index) => (
+                    <ProjectCard
+                        onClick={() => {
+                            sessionStorage.setItem("selectedProject", JSON.stringify(proj));
+                            window.location.href = `/dashboard/c/${proj.id}`;
+                        }}
+                        key={index}
+                        project={proj}
+                        id={index}
+                        projectId={proj.id}
+                    />
+                ))}
+            </div>
+            ) : (
+                <div>
+                    {/* Render default content */}
+                    <p>Default Component Content</p>
+                </div>
+            )}
+
+
+            
         </div>
     );
 };

@@ -16,7 +16,7 @@ import { ToastContext } from "@/store/ToastContext";
 import { VscGithub, VscPreview } from "react-icons/vsc";
 import { SiEthereum } from "react-icons/si";
 import axios from "axios";
-import firebaseApp from "@/services/firebase";
+import ProjectCard from "./ProjectCard";
 
 interface FDisplayProps {
   text: string;
@@ -33,7 +33,7 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     cost: number;
     tillDate: string;
     difficulty: string;
-    status: boolean
+    status: string;
   }
 
   interface Project {
@@ -50,7 +50,6 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
       minPayable: number;
       paymentDone: number;
       milestonesCompleted: number;
-      paidAmount: number;
       countOfDifficulties: {
         beginner: number;
         intermediate: number;
@@ -69,11 +68,10 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     statistics: {
       totalAmount: 0,
       averagePerMilestone: 0,
-      maxPayable: Number.MAX_VALUE,
-      minPayable: 0,
+      maxPayable: 0,
+      minPayable: Number.MAX_VALUE,
       paymentDone: 0,
       milestonesCompleted: 0,
-      paidAmount: 0,
       countOfDifficulties: {
         beginner: 0,
         intermediate: 0,
@@ -87,12 +85,13 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
     cost: 0,
     tillDate: "",
     difficulty: "",
-    status: false
+    status: 'pending'
   });
   const [difficulty, setDifficulty] = useState("");
   const [currentMileStoneIndex, setCurrentMileStoneIndex] = useState(0);
   const [clientEmail, setClientEmail] = useState("");
   const toast = useContext(ToastContext);
+  const [projects, setProjects] = useState([]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const clientRef = useRef<HTMLInputElement>(null);
@@ -159,7 +158,7 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
       tempMilestone.tillDate &&
       difficulty
     ) {
-      if (/^[0-9]+$/.test(tempMilestone.cost.toString())) {
+      if (/^\d+(\.\d+)?$/.test(tempMilestone.cost.toString())) {
         return true;
       }
       toast?.showMessage("Incorrect Milestone Cost.", "alert");
@@ -353,7 +352,7 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
       cost: 0,
       tillDate: "",
       difficulty: "",
-      status: false
+      status: 'pending'
     });
   };
 
@@ -381,7 +380,7 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
         minPayable: 0,
         paymentDone: 0,
         milestonesCompleted: 0,
-        paidAmount: 0,
+        paymentDone: 0,
         countOfDifficulties: {
           beginner: 0,
           intermediate: 0,
@@ -413,13 +412,17 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
           }
         });
 
-        console.log(response.data);
+        console.log('res',response.data);
+        setProjects(response.data.projects);
         // You can set the fetched projects to state or handle them as needed
       }
     };
 
     fetchProjects();
   }, []);
+
+  const handleCardClick = (projectId: string, additionalParam: string) => {};
+    
 
   return (
     <div className="transition-all duration-500 ease-in-out">
@@ -485,7 +488,19 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
 
       {/* form */}
       {component ? (
-        null
+        
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((proj, index) => (
+          <ProjectCard onClick= {() => {
+            sessionStorage.setItem("selectedProject", JSON.stringify(proj));
+            window.location.href = `/dashboard/f/${proj['id']}`;
+          }} 
+          key={index}
+          project={proj} 
+          id={index} 
+          projectId={proj['id']}/>
+        ))}
+      </div>
       ) : (
         <div>
           <InputField

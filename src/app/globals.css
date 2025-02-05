@@ -36,3 +36,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 0 12px #48bb78; /* Green 500 */
 }
 
+.shadow-all-directions {
+  box-shadow: 0 0 20px 0 rgba(68, 79, 97, 0.5); /* Gray 700 */
+}
