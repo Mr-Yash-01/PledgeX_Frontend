@@ -93,7 +93,6 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   const toast = useContext(ToastContext);
   const [projects, setProjects] = useState([]);
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const clientRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLInputElement>(null);
@@ -420,8 +419,6 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
 
     fetchProjects();
   }, []);
-
-  const handleCardClick = (projectId: string, additionalParam: string) => {};
     
 
   return (
@@ -432,11 +429,11 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
         >
           <IoSearchSharp />
           <input
-            ref={searchInputRef}
+            ref={(input) => input?.focus()}
             id="freelancerSearch"
             type="text"
             className={`w-full  focus:outline-none placeholder:font-body placeholder:text-gray-500`}
-            placeholder="name"
+            placeholder="Name / Category"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             onBlur={(e) => {
@@ -490,16 +487,24 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
       {component ? (
         
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map((proj, index) => (
-          <ProjectCard onClick= {() => {
+        {projects
+          .filter(
+        (proj) =>
+          proj.title.toLowerCase().includes(searchText.toLowerCase()) ||
+          proj.category.toLowerCase().includes(searchText.toLowerCase())
+          )
+          .map((proj, index) => (
+        <ProjectCard
+          onClick={() => {
             sessionStorage.setItem("selectedProject", JSON.stringify(proj));
-            window.location.href = `/dashboard/f/${proj['id']}`;
-          }} 
+            window.location.href = `/dashboard/f/${proj["id"]}`;
+          }}
           key={index}
-          project={proj} 
-          id={index} 
-          projectId={proj['id']}/>
-        ))}
+          project={proj}
+          id={index}
+          projectId={proj["id"]}
+        />
+          ))}
       </div>
       ) : (
         <div>

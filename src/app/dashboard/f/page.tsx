@@ -12,6 +12,7 @@ export default function F() {
 
   const handleSpeedDialButton = () => {
     setCurrentDisplay(!currectDisplay);
+    
   };
 
   return (

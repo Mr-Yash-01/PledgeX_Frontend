@@ -50,7 +50,7 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
         <div
             id={id.toString()}
             onClick={() => onClick(projectId)}
-            className="rounded-2xl shadow-sm shadow-gray-800 flex flex-col gap-2 p-4 cursor-pointer my-4 lg:flex lg:flex-row lg:justify-around"
+            className="rounded-2xl shadow-lg shadow-slate-800 flex flex-col gap-2 p-4 cursor-pointer my-4 lg:flex lg:flex-row lg:justify-around"
         >
             <div className="flex flex-col gap-1 lg:w-1/2">
                 <h2 className="font-bold text-2xl font-body md:text-3xl lg:text-4xl">{project.title}</h2>
