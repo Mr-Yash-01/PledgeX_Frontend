@@ -3,6 +3,7 @@ import { IoSearchSharp } from 'react-icons/io5';
 import { IoMdClose } from 'react-icons/io';
 import axios from 'axios';
 import ProjectCard from './ProjectCard';
+import FreelancerCard from './FreelancerCard';
 
 interface Project {
     id: string;
@@ -15,10 +16,23 @@ interface CDisplayProps {
     list: string[];
 }
 
+interface Freelancer {
+    name: string;
+    createdAt: string;
+    email: string;
+    projects: Project[];
+    publicAddress: string;
+    role: string;
+    uid: string;
+    picture: string;
+}
+
 const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
     const [isSearchEnabled, setIsSearchEnabled] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [projects, setProjects] = useState<Project[]>([]);
+    const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
+
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -42,6 +56,20 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
 
                     console.log(response.data);
                     setProjects(response.data.projects);
+
+                    const Freelancers = await axios.get(`http://localhost:4000/fetchFreelancers`, {
+                        params: {
+                            role: role,
+                            uid: uid
+                        }
+                    });
+
+                    console.log(Freelancers.data.freelancers);
+                    
+
+                    setFreelancers(Freelancers.data.freelancers);
+
+
                 } catch (error) {
                     console.error("Error fetching projects:", error);
                 }
@@ -101,7 +129,7 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
             
 
 
-            {text === 'Projects' ? (
+            {false ? (
                 <div className="mt-4">
                 {projects.map((proj, index) => (
                     <ProjectCard
@@ -118,8 +146,16 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
             </div>
             ) : (
                 <div>
-                    {/* Render default content */}
-                    <p>Default Component Content</p>
+
+                    {freelancers
+                        .filter(freelancer => !searchText || freelancer.name.toLowerCase().includes(searchText.toLowerCase()))
+                        .map((freelancer, index) => (
+                            <div key={index}>
+                                <FreelancerCard freelancer={freelancer} />
+                            </div>
+                        ))
+                    }
+
                 </div>
             )}
 

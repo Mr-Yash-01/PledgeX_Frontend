@@ -85,12 +85,6 @@ export default function Signin() {
                         } else {
                             router.push("/dashboard/f");
                         }
-                        
-                        // if (userData.role === 'Clients') {
-                        //     window.location.href = "/dashboard/c";
-                        // } else {
-                        //     window.location.href = "/dashboard/f";
-                        // }
 
                     } else {
                         console.log("User does not exist");

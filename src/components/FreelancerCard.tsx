@@ -1,11 +1,22 @@
-'use Client';
+"use Client";
 
-import { MdCategory } from "react-icons/md";
-import { IoStatsChart } from "react-icons/io5";
-import { FaComputer } from "react-icons/fa6";
+interface Freelancer {
+  name: string;
+  createdAt: string;
+  email: string;
+  projects: Project[];
+  publicAddress: string;
+  role: string;
+  uid: string;
+  picture: string;
+}
 
 interface FreelancerCardProps {
-    freelancer?: any;
+  freelancer: Freelancer[];
+}
+
+interface Project {
+  id: string;
 }
 
 /**
@@ -39,57 +50,38 @@ interface FreelancerCardProps {
  * />
  */
 export default function FreelancerCard({ freelancer }: FreelancerCardProps) {
+  console.log(freelancer);
 
-    return (
-        <div className="rounded-2xl shadow-sm my-4 shadow-gray-800 flex flex-col gap-2 p-4 cursor-pointer lg:flex lg:flex-row lg:justify-around">
-            <div className="flex flex-col gap-1 lg:w-1/2">
-                <h2 className="font-bold text-2xl font-body md:text-3xl lg:text-4xl">Freelancer Name</h2>
-                <hr className="w-full opacity-10" />
-                <h6 className="flex items-center gap-2 md:text-lg lg:text-xl"><FaComputer /> Post</h6>
-                <p className="text-[13px] md:text-[16px] lg:text-[18px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptate.</p>
-            </div>
-            <div className="flex flex-col gap-2">
-                {/* <div className="flex flex-col items-center">
-                    <img src="/path.png" alt="file" className="w-2/3 md:w-1/2 lg:w-1/3" />
-                    <div className="flex justify-between gap-20">
-                        <p>1/10/2003</p>
-                        <p>09/09/2003</p>
-                    </div>
-                </div> */}
-
-                {/* Skills */}
-                <div className="">
-                    <h6 className="flex gap-2 items-center border-b w-min px-2 rounded-md md:mx-8"><IoStatsChart /> Skills</h6>
-                    <div className="flex justify-around p-2 gap-2">
-                        <div>
-                            <p>Amount: $10,000</p>
-                            <p>Amount: $10,000</p>
-                        </div>
-                        <div>
-                            <p>Amount: $10,000</p>
-                            <p>Amount: $10,000</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Statistics */}
-                <div className="">
-                    <h6 className="flex gap-2 items-center border-b w-min px-2 rounded-md md:mx-8"><IoStatsChart /> Statistics</h6>
-                    <div className="flex justify-around p-2 gap-2">
-                        <div>
-                            <p>Amount: $10,000</p>
-                            <p>Amount: $10,000</p>
-                        </div>
-                        <div>
-                            <p>Amount: $10,000</p>
-                            <p>Amount: $10,000</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
+  return (
+    <div className="flex flex-col mt-4 p-2 gap-2 rounded-2xl  shadow-lg shadow-slate-700">
+      <div className="flex px-2 gap-4 items-center">
+        <div>
+          <img
+            src={freelancer?.picture || "/LogoWhite.png"}
+            alt="profile pic"
+            className="w-28 h-28 object-contain rounded "
+          />
         </div>
-    );
-
+        <div>
+          <h1 className="text-3xl font-bold uppercase truncate max-w-48">
+            {freelancer?.name}
+          </h1>
+          <h1 className="text-base opacity-70 truncate max-w-48">
+            {freelancer?.email}
+          </h1>
+          <p className="flex gap-2 font-bold items-center truncate max-w-48">
+            {new Date(freelancer?.createdAt._seconds).toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+      <div>
+        <div className="flex gap-1 items-center">
+          <hr className="w-2 opacity-60" />
+          <h1 className="opacity-80">About</h1>
+          <hr className="w-full opacity-60" />
+        </div>
+        <p className="flex pl-2 flex-col gap-2 capitalize">{freelancer?.about}</p>
+      </div>
+    </div>
+  );
 }
