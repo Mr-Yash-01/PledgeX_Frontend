@@ -63,7 +63,7 @@ export default function FreelancerCard({ freelancer }: FreelancerCardProps) {
           />
         </div>
         <div>
-          <h1 className="text-3xl font-bold uppercase truncate max-w-48">
+          <h1 className="text-3xl font-bold uppercase truncate max-w-48 xl:max-w-72">
             {freelancer?.name}
           </h1>
           <h1 className="text-base opacity-70 truncate max-w-48">

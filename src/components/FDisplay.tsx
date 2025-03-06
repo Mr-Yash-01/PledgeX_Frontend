@@ -9,7 +9,7 @@ import {
   MdEmail,
 } from "react-icons/md";
 import { CgDetailsMore } from "react-icons/cg";
-import { FaLink } from "react-icons/fa";
+import { FaLink, FaWallet } from "react-icons/fa";
 import { TbPigMoney } from "react-icons/tb";
 import { LuMilestone } from "react-icons/lu";
 import { ToastContext } from "@/store/ToastContext";
@@ -37,6 +37,8 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   }
 
   interface Project {
+    clientEmail?: string;
+    clientPublicAddress?: string;
     title: string;
     category: string;
     description: string;
@@ -59,6 +61,8 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   }
 
   const [project, setProject] = useState<Project>({
+    clientEmail: "",
+    clientPublicAddress: "",
     title: "",
     category: "",
     description: "",
@@ -89,7 +93,6 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
   });
   const [difficulty, setDifficulty] = useState("");
   const [currentMileStoneIndex, setCurrentMileStoneIndex] = useState(0);
-  const [clientEmail, setClientEmail] = useState("");
   const toast = useContext(ToastContext);
   const [projects, setProjects] = useState([]);
 
@@ -119,14 +122,15 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
 
   const validateClientEmail = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailRegex.test(clientEmail);
+    return emailRegex.test(project.clientEmail?.toString());
   };
 
   const validateProjectDetails = () => {
     console.log(project);
 
     if (
-      clientEmail &&
+      project.clientEmail &&
+      project.clientPublicAddress &&
       project.title &&
       project.category &&
       project.description &&
@@ -297,7 +301,7 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
 
       const response = await axios.post("http://localhost:4000/user/f/sp", {
         projectData: project,
-        clientEmail: clientEmail,
+        clientEmail: project.clientEmail,
         freelancerEmail: freelancerEmail,
         freelanceruid: freelanceruid
       });
@@ -486,7 +490,7 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
       {/* form */}
       {component ? (
         
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-2  xl:gap-x-12">
         {projects
           .filter(
         (proj) =>
@@ -507,7 +511,7 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
           ))}
       </div>
       ) : (
-        <div>
+        <div className="xl:grid xl:grid-cols-2 xl:gap-4 xl:gap-x-12">
           <InputField
             ref={clientRef}
             max={30}
@@ -516,7 +520,24 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, component, list }) => {
             placeholder="abc@ghi.com"
             icon={MdEmail}
             onChange={(e) => {
-              setClientEmail(e.target.value);
+              setProject((prevProject) => ({
+                ...prevProject,
+                clientEmail: e.target.value,
+              }));
+            }}
+          />
+          <InputField
+            ref={clientRef}
+            max={30}
+            title="Wallet Address"
+            type="text"
+            placeholder="0x123.....789"
+            icon={FaWallet}
+            onChange={(e) => {
+              setProject((prevProject) => ({
+                ...prevProject,
+                clientPublicAddress: e.target.value,
+              }));
             }}
           />
           <InputField

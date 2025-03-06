@@ -78,7 +78,7 @@ export default function InputField({
           ref={ref}
           id={id}
           type={type}
-          className={`w-full p-2 ${className} focus:outline-none placeholder:font-body placeholder:text-gray-500`}
+          className={`w-full p-2 ${className}  focus:outline-none placeholder:font-body placeholder:text-gray-500`}
           placeholder={placeholder}
           value={value}
           maxLength={max}
@@ -88,11 +88,11 @@ export default function InputField({
           onBlur={(e) => {
             const parent = e.currentTarget.parentElement;
             parent?.classList.remove("shadow-gray-700");
-            parent?.classList.add("shadow-zinc-900");
+            parent?.classList.add("shadow-zinc-800");
           }}
           onFocus={(e) => {
             const parent = e.currentTarget.parentElement;
-            parent?.classList.remove("shadow-zinc-900");
+            parent?.classList.remove("shadow-zinc-800");
             parent?.classList.add("shadow-gray-700");
           }}
           style={{

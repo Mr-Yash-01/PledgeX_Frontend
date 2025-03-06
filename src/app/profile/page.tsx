@@ -55,7 +55,7 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* Main content */}
-      <main className="h-screen p-4">
+      <main className="h-screen p-4 xl:px-[576px]">
         {/* profile picture */}
         <div className="flex justify-center items-center">
           <div className="w-48 h-48 flex justify-center items-center rounded-full shadow-all-directions shadow-slate-100">

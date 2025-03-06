@@ -50,9 +50,9 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
         <div
             id={id.toString()}
             onClick={() => onClick(projectId)}
-            className="rounded-2xl shadow-lg shadow-slate-800 flex flex-col gap-2 p-4 cursor-pointer my-4 lg:flex lg:flex-row lg:justify-around"
+            className="rounded-2xl shadow-lg shadow-gray-800 flex flex-col gap-2 p-4 cursor-pointer my-4 lg:flex lg:flex-row lg:justify-around xl:flex-col"
         >
-            <div className="flex flex-col gap-1 lg:w-1/2">
+            <div className="flex flex-col gap-1 lg:w-1/2 xl:w-full">
                 <h2 className="font-bold text-2xl font-body md:text-3xl lg:text-4xl">{project.title}</h2>
                 <hr className="w-full opacity-10" />
                 <h6 className="flex items-center gap-2 md:text-lg lg:text-xl">
@@ -71,11 +71,11 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
 
                 {/* Statistics */}
                 <div className="">
-                    <h6 className="flex gap-2 items-center border-b w-min px-2 rounded-md md:mx-8">
+                    <h6 className="flex gap-2 items-center border-b w-min px-2 rounded-md md:mx-8 xl:mx-4">
                         <IoStatsChart /> Statistics
                     </h6>
                     <div className="flex py-2 gap-4">
-                        <div className="flex flex-col w-1/2 gap-2 justify-center">
+                        <div className="flex flex-col w-1/2 gap-2 justify-center xl:px-8">
                             <p className="flex justify-between">
                                 <span className="opacity-80">Total</span>
                                 <span>
@@ -93,9 +93,9 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
                                 </span>
                             </p>
                         </div>
-                        <div className="flex flex-col w-1/2 gap-2 justify-center">
+                        <div className="flex flex-col w-1/2 gap-2 justify-center xl:px-8">
                             <p className="flex justify-between">
-                                <span className="opacity-80 truncate max-w-[80px]">Max Payable</span>
+                                <span className="opacity-80 truncate max-w-[80px] xl:max-w-[120px]">Max Payable</span>
                                 <span>
                                     {Number.isInteger(project.statistics.maxPayable)
                                         ? project.statistics.maxPayable
@@ -103,7 +103,7 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
                                 </span>
                             </p>
                             <p className="flex justify-between">
-                                <span className="opacity-80 truncate max-w-[80px]">Min Payable</span>
+                                <span className="opacity-80 truncate max-w-[80px] xl:max-w-[120px]">Min Payable</span>
                                 <span>
                                     {Number.isInteger(project.statistics.minPayable)
                                         ? project.statistics.minPayable

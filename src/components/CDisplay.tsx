@@ -139,7 +139,7 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
       )}
 
       {text === "Projects" ? (
-        <div className="mt-4">
+        <div className="mt-4 xl:grid xl:grid-cols-2 xl:gap-4 xl:gap-x-12">
           {projects
             .filter(
               (proj) =>
@@ -163,7 +163,7 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
             ))}
         </div>
       ) : (
-        <div>
+        <div className="mt-4 xl:grid xl:grid-cols-3 xl:gap-4 xl:gap-x-12">
           {freelancers
             .filter(
               (freelancer) =>
