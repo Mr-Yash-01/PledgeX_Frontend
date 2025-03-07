@@ -29,7 +29,7 @@ export const CMilestone = ({ milestoneData, actionable, projectId, index }: FMil
 
   const handleCheckClick = async() => {
     try {
-        const response = await axios.put('http://localhost:4000/user/f/sm', {
+        const response = await axios.put('http://localhost:4000/user/c/sm', {
             projectId : projectId,
             index : index
         })
