@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { signInWithGoogle, signInWithGithub } from "@/services/auth";
 import { useRouter } from "next/navigation";
-import { Spinner } from "react-bootstrap";
+import Loader from "@/components/Loader";
 
 export default function Signin() {
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -63,7 +63,6 @@ export default function Signin() {
   };
 
   const handleConnect = () => {
-    console.log("Connect button clicked");
     setLoading(true);
 
     const email = (document.getElementById("signinEmail") as HTMLInputElement)
@@ -84,7 +83,6 @@ export default function Signin() {
           if (response.status === 200) {
             // Redirect to dashboard
             const userData = response.data.user;
-            console.log(userData);
 
             localStorage.setItem("userData", JSON.stringify(userData));
 
@@ -109,7 +107,7 @@ export default function Signin() {
 
   const handleGoogleSignIn = async () => {
     const token = await signInWithGoogle();
-    console.log(token);
+
 
     axios
       .post("http://localhost:4000/auth/signin/gg", { token })
@@ -197,7 +195,11 @@ export default function Signin() {
             />
             <Info info="Forgot Password?" className="text-right underline" />
 
-            <Button
+            {
+              loading ? (
+                <Loader />
+              ) : (
+                <Button
               id="connect"
               name="Connect"
               title="Sign In"
@@ -206,6 +208,9 @@ export default function Signin() {
               disabled={!isConnectButtonEnabled}
               className="md:py-4"
             />
+              )
+            }
+            
 
             {/* Divider */}
             <div className="flex flex-row items-center gap-4 mt-8">

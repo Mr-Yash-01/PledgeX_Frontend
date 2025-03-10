@@ -27,14 +27,6 @@ export default function C() {
 
   return (
     <div className="p-4 flex flex-col gap-8 md:px-20 lg:px-72">
-      {/* Financial Details */}
-      <div className="flex">
-        {/* card */}
-        <div className="flex justify-between p-4 shadow-lg shadow-gray-800 w-full rounded-2xl md:px-8">
-          <KeyMoney keyName="Total Investment:" value="$100,000" />
-          <KeyMoney keyName="Total Returns:" value="$50,000" />
-        </div>
-      </div>
 
       {isCreateProject ? (
         <CreateProject />

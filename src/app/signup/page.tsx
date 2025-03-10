@@ -13,6 +13,7 @@ import { signInWithGithub, signInWithGoogle } from "@/services/auth";
 import { GrLinkNext } from "react-icons/gr";
 import { IoPerson } from "react-icons/io5";
 import Checkbox from "@/components/Checkbox";
+import Loader from "@/components/Loader";
 
 export default function SignUp() {
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -22,6 +23,7 @@ export default function SignUp() {
   const [iscb1Checked, setcb1Checked] = useState(false);
   const [iscb2Checked, setcb2Checked] = useState(false);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -210,6 +212,7 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
   };
 
   const handleCreateAccount = () => {
+    setIsLoading(true);
     const name = (document.getElementById("yourName") as HTMLInputElement)
       .value;
     setUser((prevState) => ({ ...prevState, name }));
@@ -218,8 +221,6 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
       ...user,
       name,
     };
-
-    console.log(updatedUser);
 
     if (
       updatedUser.email &&
@@ -231,16 +232,17 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
       axios
         .post("http://localhost:4000/auth/signup", updatedUser)
         .then((response) => {
-          console.log('response');
-          
           if (response.status === 201) {
             console.log("Account created successfully");
             window.location.href = "/signin";
+            setIsLoading(false);
           } else {
             console.log("Account creation failed");
+            setIsLoading(false);
           }
         })
         .catch((error) => {
+          setIsLoading(false);
           console.log(error);
         });
     }
@@ -390,9 +392,12 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
               placeholder="describe yourwork"
               type="text"
               max={300}
-            onChange={(e) => {
-                setUser((prevState) => ({ ...prevState, about: e.target.value }));
-            }}
+              onChange={(e) => {
+                setUser((prevState) => ({
+                  ...prevState,
+                  about: e.target.value,
+                }));
+              }}
             />
 
             <InputField
@@ -403,8 +408,11 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
               placeholder="0x1234....5678"
               type="text"
               onChange={(e) => {
-                setUser((prevState) => ({ ...prevState, publicAddress: e.target.value }));
-            }}
+                setUser((prevState) => ({
+                  ...prevState,
+                  publicAddress: e.target.value,
+                }));
+              }}
             />
 
             {/* checkboxes */}
@@ -439,16 +447,20 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
             </div>
 
-            {/* create button */}
+            {/* Divider */}
             <div className="flex flex-col items-end">
-              <Button
-                id="createAccount"
-                name="Create"
-                title="Sign Up"
-                icon={IoMdPersonAdd}
-                onClick={handleCreateAccount}
-                className="md:py-4"
-              />
+              {isLoading ? (
+                <Loader />
+              ) : (
+                <Button
+                  id="createAccount"
+                  name="Create"
+                  title="Sign Up"
+                  icon={IoMdPersonAdd}
+                  onClick={handleCreateAccount}
+                  className="md:py-4"
+                />
+              )}
             </div>
 
             {/* Sign up link */}
