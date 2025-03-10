@@ -17,21 +17,27 @@ interface FMilestoneProps {
   milestoneData: Milestone;
   actionable : boolean,
   projectId : string,
-  index: number
+  index: number,
+  freelancerPublicAddress: string,
+  totalAmount: number
 }
 
 
 
-export const CMilestone = ({ milestoneData, actionable, projectId, index }: FMilestoneProps) => {
-    console.log(actionable);
+export const CMilestones = ({ milestoneData, actionable, projectId, index, totalAmount, freelancerPublicAddress }: FMilestoneProps) => {
+    console.log(milestoneData,actionable);
 
     const toast = useContext(ToastContext);
 
   const handleCheckClick = async() => {
     try {
+      console.log(freelancerPublicAddress);
+      
         const response = await axios.put('http://localhost:4000/user/c/sm', {
             projectId : projectId,
-            index : index
+            index : index,
+            totalAmount : totalAmount,
+            freelancerPublicAddress : freelancerPublicAddress
         })
 
         if (response.status === 200) {
@@ -73,10 +79,10 @@ export const CMilestone = ({ milestoneData, actionable, projectId, index }: FMil
         <div className="flex justify-end pt-4">
             {
                 (milestoneData.status === 'pending') ? 
-                <FaClock className={`w-4 h-4 cursor-pointer ${actionable ? '': 'cursor-not-allowed'}`} /> :
+                <FaClock className={`w-4 h-4 cursor-not-allowed`} /> :
                 (milestoneData.status === 'sent') ?
-                <FaCheck onClick={handleCheckClick} className={`w-4 h-4 cursor-pointer`} /> :
-                <BiCheckDouble className={` w-6 h-6 cursor-pointer`} /> 
+                <FaCheck onClick={handleCheckClick} className={`w-4 h-4 cursor-pointer ${actionable ? '': ''}`} /> :
+                <BiCheckDouble className={` w-6 h-6 `} /> 
             }
         </div>
         <div className="w-28 pl-2 flex flex-col justify-end">

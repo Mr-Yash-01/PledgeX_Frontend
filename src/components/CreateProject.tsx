@@ -441,7 +441,8 @@ const CreateProject: React.FC = () => {
         />
         <InputField
           ref={freelancerRef}
-          max={30}
+          max={42}
+          min={42}
           title="Freelancer Wallet Address"
           type="text"
           placeholder="0x123.....789"

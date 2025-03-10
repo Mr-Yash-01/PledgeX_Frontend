@@ -33,6 +33,7 @@ interface InputFieldProps {
   containerId?: string;
   ref? : React.Ref<HTMLInputElement>
   max?: number;
+  min?: number;
   pattern?: string;
 }
 
@@ -55,6 +56,7 @@ export default function InputField({
   title = "Title",
   type = "text",
   max,
+  min,
   className = "",
   placeholder = "placeholder",
   value,
@@ -82,6 +84,7 @@ export default function InputField({
           placeholder={placeholder}
           value={value}
           maxLength={max}
+          minLength={min}
           onKeyDown={onKeyDown}
           pattern={pattern}
           onChange={onChange}

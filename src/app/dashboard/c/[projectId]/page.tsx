@@ -1,7 +1,7 @@
 "use client";
 
+import { CMilestones } from "@/components/CMilestones";
 import DifficultyMeter from "@/components/DifficultyMeter";
-import { FMilestone } from "@/components/FMilestone";
 import React, { useEffect, useState } from "react";
 import { CgDetailsMore } from "react-icons/cg";
 import { FaClock, FaGithub } from "react-icons/fa";
@@ -243,9 +243,11 @@ const ProjectDashboard: React.FC = () => {
         <hr className="opacity-20"></hr>
         <div className="p-8">
             {projectData?.milestones.map((milestone, index) => (
-              <FMilestone
+              <CMilestones
               projectId={projectId}
               index={index}
+              totalAmount={projectData?.statistics.totalAmount}
+              freelancerPublicAddress={projectData?.freelancerPublicAddress}
               actionable={index === 0 || projectData.milestones[index - 1]?.status === 'approved'}
               milestoneData={milestone}
               key={index}
