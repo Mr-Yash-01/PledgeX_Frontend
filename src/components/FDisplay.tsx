@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 

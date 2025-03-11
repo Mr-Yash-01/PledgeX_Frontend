@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { IoSend } from "react-icons/io5";
 import { IoMdAdd } from "react-icons/io";
 import InputField from "./InputField";
@@ -324,7 +324,7 @@ const CreateProject: React.FC = () => {
                 if (txResult && txResult.status === 1) {
                     toast?.showMessage("Transaction Successfully Mined!", "info");
 
-                    const response = await axios.post(
+                    await axios.post(
                         "http://localhost:4000/user/c/sp",
                         {
                             projectData: updatedProject, // Use the local object
