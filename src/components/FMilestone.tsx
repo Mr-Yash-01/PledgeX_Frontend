@@ -23,7 +23,7 @@ interface FMilestoneProps {
 
 
 export const FMilestone = ({ milestoneData, actionable, projectId, index }: FMilestoneProps) => {
-    console.log(actionable);
+    
 
     const toast = useContext(ToastContext);
 

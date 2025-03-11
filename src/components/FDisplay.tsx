@@ -16,36 +16,43 @@ const FDisplay: React.FC<FDisplayProps> = ({ text, list }) => {
   const [searchText, setSearchText] = useState("");
   const [projects, setProjects] = useState([]);
 
+  // Function to fetch projects from the API
+  const fetchProjects = async () => {
+    const userData = localStorage.getItem("userData");
+    if (!userData) {
+      console.error("User data not found");
+      return;
+    }
 
-  useEffect(() => {
-    // Adjust the import based on your firebase config file
-
-    const fetchProjects = async () => {
-      const userData = localStorage.getItem('userData');
-      if (!userData) {
-        throw new Error("User data not found");
-      }
-
+    try {
       const userDataObj = JSON.parse(userData);
       const role = userDataObj.role;
       const uid = userDataObj.uid;
 
       if (role && uid) {
         const response = await axios.get(`http://localhost:4000/fetchProjects`, {
-          params : {
+          params: {
             role: role,
-            uid: uid
-          }
+            uid: uid,
+          },
         });
 
-        console.log('res',response.data);
+        
         setProjects(response.data.projects);
-        // You can set the fetched projects to state or handle them as needed
       }
-    };
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
 
-    fetchProjects();
-  }, []);
+  // Fetch projects initially and then poll every 5 seconds
+  useEffect(() => {
+    fetchProjects(); // Initial fetch
+
+    const interval = setInterval(fetchProjects, 5000);
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, []); // Runs once on component mount
     
 
   if (projects.length < 1) {

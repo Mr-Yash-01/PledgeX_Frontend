@@ -38,54 +38,53 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      const userData = localStorage.getItem("userData");
-      if (!userData) {
-        throw new Error("User data not found");
-      }
+  // Function to fetch both projects and freelancers
+  const fetchData = async () => {
+    const userData = localStorage.getItem("userData");
+    if (!userData) {
+      console.error("User data not found");
+      return;
+    }
 
+    try {
       const userDataObj = JSON.parse(userData);
       const role = userDataObj.role;
       const uid = userDataObj.uid;
 
       if (role && uid) {
-        try {
-          const response = await axios.get(
-            `http://localhost:4000/fetchProjects`,
-            {
-              params: {
-                role: role,
-                uid: uid,
-              },
-            }
-          );
+        // Fetch Projects
+        const projectsResponse = await axios.get(`http://localhost:4000/fetchProjects`, {
+          params: { role, uid },
+        });
 
-          setProjects(response.data.projects);
+        setProjects(projectsResponse.data.projects);
+        
 
-          const Freelancers = await axios.get(
-            `http://localhost:4000/fetchFreelancers`,
-            {
-              params: {
-                role: role,
-                uid: uid,
-              },
-            }
-          );
+        // Fetch Freelancers
+        const freelancersResponse = await axios.get(`http://localhost:4000/fetchFreelancers`, {
+          params: { role, uid },
+        });
 
-
-          setFreelancers(Freelancers.data.freelancers);
-        } catch (error) {
-          console.error("Error fetching projects:", error);
-        }
+        setFreelancers(freelancersResponse.data.freelancers);
+        
       }
-    };
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-    fetchProjects();
+  // Fetch data initially and then poll every 5 seconds
+  useEffect(() => {
+    fetchData(); // Initial fetch
+
+    const interval = setInterval(fetchData, 5000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
+
   if (projects.length > 0) {
-    console.log("Loaded...");
+    
     
     return (
       <div className="transition-all duration-500 ease-in-out">
@@ -187,7 +186,7 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
     );
     
   } else {
-    console.log("Loading...");
+    
     
     return <Skeleton/>;
   }

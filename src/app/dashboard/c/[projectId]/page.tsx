@@ -2,6 +2,7 @@
 
 import { CMilestones } from "@/components/CMilestones";
 import DifficultyMeter from "@/components/DifficultyMeter";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { CgDetailsMore } from "react-icons/cg";
 import { FaClock, FaGithub } from "react-icons/fa";
@@ -45,36 +46,47 @@ const ProjectDashboard: React.FC = () => {
   const [projectData, setProjectData] = useState<Project | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
 
+  // Extract projectId from URL and fetch session storage
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Get the projectId from the URL path (e.g., /dashboard/f/123)
       const pathSegments = window.location.pathname.split("/");
-      const id = pathSegments[pathSegments.length - 1]; // Get last segment which is the projectId
+      const id = pathSegments[pathSegments.length - 1]; // Last segment as projectId
       setProjectId(id);
 
-      // Retrieve project data from sessionStorage
       const storedProject = sessionStorage.getItem("selectedProject");
       if (storedProject) {
         setProjectData(JSON.parse(storedProject));
       } else {
-        console.error("No project data found in session storage");
+        console.warn("No project data found in session storage");
       }
-
-      // Clear sessionStorage on page unload
-      const handleBeforeUnload = () => {
-        // sessionStorage.removeItem('selectedProject');
-      };
-
-      window.addEventListener("beforeunload", handleBeforeUnload);
-
-      // Cleanup listener when component is unmounted or the page is about to be unloaded
-      return () => {
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-      };
     }
   }, []);
 
-  console.log(projectData);
+  // Fetch project data from the backend
+  const fetchProjectData = async () => {
+    if (!projectId) return; // Ensure projectId is available before making the request
+
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/fetchProject?projectId=${projectId}`
+      );
+      
+      setProjectData(response.data.projectData);
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    }
+  };
+
+  // Implement polling every 5 seconds
+  useEffect(() => {
+    if (!projectId) return; // Start polling only if projectId exists
+
+    fetchProjectData(); // Initial fetch
+    const interval = setInterval(fetchProjectData, 5000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [projectId]); // Runs whenever projectId changes
+
   
 
   return (
@@ -86,11 +98,11 @@ const ProjectDashboard: React.FC = () => {
         </h2>
         <hr className="opacity-20"></hr>
         <div className="flex flex-col gap-1 px-4 py-2">
-          <h1 className="text-6xl xl:text-8xl">{projectData?.title}</h1>
-          <p className="flex gap-2 items-center text-2xl xl:text-4xl">
+          <h1 title={projectData?.title} className="text-6xl truncate capitalize cursor-pointer xl:text-8xl">{projectData?.title}</h1>
+          <p title={projectData?.category} className="flex gap-2 truncate capitalize cursor-pointer items-center text-2xl xl:text-4xl">
             <MdCategory /> {projectData?.category}
           </p>
-          <p className="text-sm xl:text-xl">{projectData?.description}</p>
+          <p title={projectData?.description} className="text-sm truncate capitalize cursor-pointer xl:text-xl">{projectData?.description}</p>
           <a
             href={projectData?.githubLink}
             target="_blank"
@@ -205,7 +217,7 @@ const ProjectDashboard: React.FC = () => {
       </div>
 
       {/* Difficulty Meter */}
-      <div className="shadow-all-directions rounded-2xl">
+      <div className="shadow-all-directions rounded-2xl h-fit">
         <h2 className="flex items-center gap-2 text-xl px-4 py-2">
           <CgDetailsMore /> Level Gauge
         </h2>

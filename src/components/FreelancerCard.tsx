@@ -46,11 +46,11 @@ interface Project {
  *       amount4: "$10,000"
  *     }
  *   }}
- *   onClick={() => console.log("Card clicked")}
+ *   onClick={() => 
  * />
  */
 export default function FreelancerCard({ freelancer }: FreelancerCardProps) {
-  console.log(freelancer);
+  
 
   return (
     <div className="flex flex-col mt-4 p-2 gap-2 rounded-2xl  shadow-lg shadow-slate-700">

@@ -53,12 +53,12 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
             className="rounded-2xl shadow-lg shadow-gray-800 flex flex-col gap-2 p-4 cursor-pointer my-4 lg:flex lg:flex-row lg:justify-around xl:flex-col"
         >
             <div className="flex flex-col gap-1 lg:w-1/2 xl:w-full">
-                <h2 className="font-bold text-2xl font-body md:text-3xl lg:text-4xl">{project.title}</h2>
+                <h2 className="font-bold text-2xl font-body truncate capitalize md:text-3xl lg:text-4xl">{project.title}</h2>
                 <hr className="w-full opacity-10" />
-                <h6 className="flex items-center gap-2 md:text-lg lg:text-xl">
+                <h6 className="flex items-center gap-2 truncate capitalize md:text-lg lg:text-xl">
                     <MdCategory /> {project.category}
                 </h6>
-                <p className="text-[13px] md:text-[16px] lg:text-[18px]">{project.description}</p>
+                <p className="text-[13px] truncate capitalize md:text-[16px] lg:text-[18px]">{project.description}</p>
             </div>
             <div className="flex flex-col gap-2">
                 <div className="flex flex-col items-center">

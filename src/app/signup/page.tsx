@@ -202,7 +202,7 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
       const email = (document.getElementById("signinEmail") as HTMLInputElement).value;
       const encryptedPassword = btoa(password); // Encrypt password using base64 encoding
       setUser((prevState) => ({ ...prevState, email, password: encryptedPassword }));
-      console.log({ ...user, email, password: encryptedPassword });
+      
     }
   };
 
@@ -227,17 +227,17 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
       updatedUser.name &&
       updatedUser.role
     ) {
-      console.log(updatedUser);
+      
       
       axios
         .post("http://localhost:4000/auth/signup", updatedUser)
         .then((response) => {
           if (response.status === 201) {
-            console.log("Account created successfully");
+            
             window.location.href = "/signin";
             setIsLoading(false);
           } else {
-            console.log("Account creation failed");
+            
             setIsLoading(false);
           }
         })
@@ -260,7 +260,7 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
                 id="step1Button"
                 onClick={() => {
                   handlestepButton(1);
-                  console.log("step1 tapped");
+                  
                 }}
                 className={`cursor-pointer flex items-center justify-center w-16 h-16 rounded-full shadow-md shadow-gray-600 text-2xl underline-offset-1 ${
                   currentStep === 1 ? "underline underline-offset-4" : ""
@@ -271,7 +271,7 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
                 ) : (
                   <IoMdCheckmark
                     onClick={() => {
-                      console.log("checkmark tapped");
+                      
                     }}
                   ></IoMdCheckmark>
                 )}

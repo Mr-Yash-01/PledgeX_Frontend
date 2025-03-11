@@ -2,6 +2,7 @@
 
 import DifficultyMeter from "@/components/DifficultyMeter";
 import { FMilestone } from "@/components/FMilestone";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { CgDetailsMore } from "react-icons/cg";
 import { FaClock, FaGithub } from "react-icons/fa";
@@ -67,14 +68,37 @@ const ProjectDashboard: React.FC = () => {
 
       window.addEventListener("beforeunload", handleBeforeUnload);
 
-      // Cleanup listener when component is unmounted or the page is about to be unloaded
       return () => {
         window.removeEventListener("beforeunload", handleBeforeUnload);
       };
     }
   }, []);
 
-  console.log(projectData);
+  // Function to fetch project data from the API
+  const fetchProjectData = async () => {
+    if (!projectId) return; // Ensure projectId exists before making API call
+
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/fetchProject?projectId=${projectId}`
+      );
+      
+      setProjectData(response.data.projectData);
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    }
+  };
+
+  // Polling: Fetch project data every 5 seconds
+  useEffect(() => {
+    if (!projectId) return; // Start polling only when projectId is available
+
+    fetchProjectData(); // Initial fetch
+    const interval = setInterval(fetchProjectData, 5000);
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [projectId]); // Runs when projectId changes
+
   
 
   return (

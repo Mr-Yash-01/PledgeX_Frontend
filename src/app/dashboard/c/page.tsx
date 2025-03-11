@@ -3,7 +3,6 @@
 import CDisplay from "@/components/CDisplay";
 import CreateProject from "@/components/CreateProject";
 import FreelancerCard from "@/components/FreelancerCard";
-import KeyMoney from "@/components/KeyMoney";
 import ProjectCard from "@/components/ProjectCard";
 import { useState } from "react";
 import { FaInbox } from "react-icons/fa";
@@ -15,13 +14,13 @@ export default function C() {
   const [isCreateProject, setIsCreateProject] = useState(false);
 
   const handleSpeedDialButton = () => {
-    console.log(1);
+    
 
     setCurrentDisplay(!currectDisplay);
   };
 
   const handleCreateProject = () => {
-    console.log(2);
+    
     setIsCreateProject(!isCreateProject);
   };
 

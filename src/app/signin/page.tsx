@@ -79,7 +79,7 @@ export default function Signin() {
       )
       .then((response) => {
         try {
-          console.log(response);
+          
           if (response.status === 200) {
             // Redirect to dashboard
             const userData = response.data.user;
@@ -92,7 +92,7 @@ export default function Signin() {
               router.push("/dashboard/f");
             }
           } else {
-            console.log("User does not exist");
+            
             setLoading(false);
           }
         } catch (error) {
@@ -113,12 +113,12 @@ export default function Signin() {
       .post("http://localhost:4000/auth/signin/gg", { token })
       .then((response) => {
         try {
-          console.log(response);
+          
           if (response.status === 200) {
-            console.log("Google sign-in successful");
+            
             // Redirect to dashboard
           } else {
-            console.log("Google sign-in failed");
+            
           }
         } catch (error) {
           console.log(error);
@@ -131,18 +131,18 @@ export default function Signin() {
 
   const handleGithubSignIn = async () => {
     const token = await signInWithGithub();
-    console.log(token);
+    
 
     axios
       .post("http://localhost:4000/auth/signin/gh", { token })
       .then((response) => {
         try {
-          console.log(response);
+          
           if (response.status === 200) {
-            console.log("Github sign-in successful");
+            
             // Redirect to dashboard
           } else {
-            console.log("Github sign-in failed");
+            
           }
         } catch (error) {
           console.log(error);

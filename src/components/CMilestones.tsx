@@ -25,14 +25,11 @@ interface FMilestoneProps {
 
 
 export const CMilestones = ({ milestoneData, actionable, projectId, index, totalAmount, freelancerPublicAddress }: FMilestoneProps) => {
-    console.log(milestoneData,actionable);
 
     const toast = useContext(ToastContext);
 
   const handleCheckClick = async() => {
-    try {
-      console.log(freelancerPublicAddress);
-      
+    try {      
         const response = await axios.put('http://localhost:4000/user/c/sm', {
             projectId : projectId,
             index : index,
@@ -55,10 +52,14 @@ export const CMilestones = ({ milestoneData, actionable, projectId, index, total
     
   return (
     <div className="flex justify-evenly h-fit gap-2 ">
-      <div className="w-28 flex flex-col justify-end">
-        <h3 className="text-lg">{milestoneData.name}</h3>
+
+      {/* 1st div */}
+      <div className=" flex flex-col justify-end ">
+        <h3 title={milestoneData.name} className="text-2xl truncate capitalize cursor-pointer max-w-28 md:max-w-full lg:max-w-72">{milestoneData.name}</h3>
         <h4 className="text-sm">{milestoneData.difficulty}</h4>
       </div>
+
+      {/* 2nd div */}
       <div
         title={`${milestoneData.difficulty} level`}
         className="flex flex-col cursor-pointer items-center">
@@ -75,8 +76,10 @@ export const CMilestones = ({ milestoneData, actionable, projectId, index, total
           <div className=" bg-[#cccccc] rounded-full h-4 w-4"></div>
         </div>
       </div>
+
+      {/* 3rd div */}
       <div className="flex flex-col justify-between">
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end pt-8 pr-6">
             {
                 (milestoneData.status === 'pending') ? 
                 <FaClock className={`w-4 h-4 cursor-not-allowed`} /> :

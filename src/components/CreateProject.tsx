@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { IoSend } from "react-icons/io5";
 import { IoMdAdd } from "react-icons/io";
 import InputField from "./InputField";
@@ -18,6 +18,7 @@ import { SiEthereum } from "react-icons/si";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { ethers } from "ethers";
+import Loader from "./Loader";
 
 const CreateProject: React.FC = () => {
   interface Milestone {
@@ -90,6 +91,7 @@ const CreateProject: React.FC = () => {
   const [difficulty, setDifficulty] = useState("");
   const [currentMileStoneIndex, setCurrentMileStoneIndex] = useState(0);
   const toast = useContext(ToastContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const freelancerRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -268,7 +270,7 @@ const CreateProject: React.FC = () => {
           setCurrentMileStoneIndex(currentMileStoneIndex + 1);
           resetMilestoneDetails();
           toast?.showMessage("Milestone Added!", "info");
-          console.log(project);
+          
         }
       }
     } else {
@@ -312,7 +314,7 @@ const CreateProject: React.FC = () => {
             });
 
             if (response.data.success) {
-                console.log("Transaction data:", response.data.txData);
+                
 
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
@@ -320,7 +322,7 @@ const CreateProject: React.FC = () => {
                 const txResult = await txResponse.wait();
 
                 if (txResult && txResult.status === 1) {
-                    alert("✅ Transaction Successfully Mined!");
+                    toast?.showMessage("Transaction Successfully Mined!", "info");
 
                     const response = await axios.post(
                         "http://localhost:4000/user/c/sp",
@@ -332,37 +334,41 @@ const CreateProject: React.FC = () => {
                         }
                     );
 
-                    console.log("Response:", response.data);
                     toast?.showMessage("Project uploaded successfully", "info");
                     resetMilestoneDetails();
                     resetProjectDetails();
                 } else {
-                    alert("❌ Transaction Failed! It may have been reverted.");
+                    toast?.showMessage("Transection Failed", "error");
                 }
             }
         } catch (error) {
             console.error("Error fetching transaction data:", error);
-            toast?.showMessage("Insufficient Balance", "error");
+            toast?.showMessage("Transection Failed", "error");
         }
     } catch (error) {
         console.error("Error uploading doc:", error);
         toast?.showMessage("Internal Server Error", "error");
     }
 };
+    
 
-
-  const handleSubmitButton = () => {
+  const handleSubmitButton = async () => {
     // uploadToFirebase();
     if (currentMileStoneIndex !== 0) {
       if (validateProjectDetails() && validateProjectDates()) {
         try {
-          uploadToFirebase();
+          setIsLoading(true);
+          
+          
+          await uploadToFirebase();
         } catch (error) {
           console.error("Error uploading doc:", error);
           toast?.showMessage("Internal Server Error", "error");
         }
+        setIsLoading(false);
       }
     } else {
+      setIsLoading(false);
       toast?.showMessage("Min 1 milestone required.", "warning");
     }
   };
@@ -638,14 +644,20 @@ const CreateProject: React.FC = () => {
           >
             <IoMdAdd /> Milestone
           </button>
-          <button
-            onClick={handleSubmitButton}
-            title="Submit Project"
-            type="button"
-            className="flex gap-4 items-center justify-center w-1/2 p-2 py-2 rounded-xl shadow-lg shadow-gray-800"
-          >
-            <IoSend /> Submit
-          </button>
+
+          {isLoading ? (
+            <div className="w-1/2 flex items-center justify-center"><Loader /></div>
+            
+          ) : (
+            <button
+              onClick={handleSubmitButton}
+              title="Submit Project"
+              type="button"
+              className="flex gap-4 items-center justify-center w-1/2 p-2 py-2 rounded-xl shadow-lg shadow-gray-800"
+            >
+              <IoSend /> Submit
+            </button>
+          )}
         </div>
 
         {/* preview */}

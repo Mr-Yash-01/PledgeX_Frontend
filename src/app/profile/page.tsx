@@ -28,7 +28,7 @@ const ProfilePage: React.FC = () => {
     try {
 
       const res = await axios.post("http://localhost:5000/auth/signout");
-      console.log(res.data);
+      
       localStorage.removeItem("userData");
       sessionStorage.removeItem("userData");
       window.location.href = "/signin";
