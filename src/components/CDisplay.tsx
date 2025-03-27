@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
@@ -5,6 +6,7 @@ import axios from "axios";
 import ProjectCard from "./ProjectCard";
 import FreelancerCard from "./FreelancerCard";
 import Skeleton from "./Skeleton";
+import { useRouter } from "next/navigation";
 
 interface Project {
   id: string;
@@ -37,6 +39,7 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
   const [searchText, setSearchText] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
+  const router = useRouter();
 
   // Function to fetch both projects and freelancers
   const fetchData = async () => {
@@ -143,7 +146,7 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
         )}
   
         {text === "Projects" ? (
-          <div className="mt-4 xl:grid xl:grid-cols-2 xl:gap-4 xl:gap-x-12">
+          <div className="mt-4 grid grid-cols-1 xl:grid-cols-2 xl:gap-4 xl:gap-x-12">
             {projects
               .filter(
                 (proj) =>
@@ -153,11 +156,12 @@ const CDisplay: React.FC<CDisplayProps> = ({ text, component, list }) => {
               .map((proj, index) => (
                 <ProjectCard
                   onClick={() => {
+                    
                     sessionStorage.setItem(
                       "selectedProject",
                       JSON.stringify(proj)
                     );
-                    window.location.href = `/dashboard/c/${proj.id}`;
+                    router.push(`/dashboard/c/${proj.id}`);
                   }}
                   key={index}
                   project={proj}

@@ -37,6 +37,7 @@ export default function C() {
               list={["Project 1", "Project 2", "Project 3"]}
               text="Projects"
               component={<ProjectCard />}
+              
             />
           ) : (
             // List of freelancers

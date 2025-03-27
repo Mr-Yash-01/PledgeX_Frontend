@@ -105,7 +105,7 @@ const CreateProject: React.FC = () => {
   const tillDateRef = useRef<HTMLInputElement>(null);
 
   const validateGithubLink = () => {
-    return true;
+    // return true;
     const githubLinkPattern =
       /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+\/?$/;
 
@@ -252,9 +252,19 @@ const CreateProject: React.FC = () => {
     }));
   };
 
+  const validateWalletAddress = (): boolean => {
+    const walletAddressPattern = /^0x[a-fA-F0-9]{40}$/;
+    if (walletAddressPattern.test(project.freelancerPublicAddress)) {
+      return true;
+    } else {
+      toast?.showMessage("Invalid Wallet Address.", "warning");
+      return false;
+    }
+  };
+
   const handleAddMilestoneButton = () => {
     if (currentMileStoneIndex < 10) {
-      if (validateProjectDetails() && validateProjectDates()) {
+      if (validateProjectDetails() && validateProjectDates() && validateWalletAddress()) {
         if (validateMilestoneDetails() && validateMilestoneDate()) {
           setProject((prevProject) => {
             const updatedMilestones = [...prevProject.milestones];
@@ -396,6 +406,7 @@ const CreateProject: React.FC = () => {
     if (githubLinkRef.current) githubLinkRef.current.value = "";
     if (startDateRef.current) startDateRef.current.value = "";
     if (endDateRef.current) endDateRef.current.value = "";
+    if (freelancerRef.current) freelancerRef.current.value = "";
     setCurrentMileStoneIndex(0);
     setProject({
       title: "",

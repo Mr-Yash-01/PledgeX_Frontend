@@ -2,6 +2,7 @@
 
 import { MdCategory } from "react-icons/md";
 import { IoStatsChart } from "react-icons/io5";
+import Image from "next/image";
 
 
 interface Milestone {
@@ -62,7 +63,7 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
             </div>
             <div className="flex flex-col gap-2">
                 <div className="flex flex-col items-center">
-                    <img src='/path.png' alt="file" className="w-2/3 md:w-1/2 lg:w-1/3" />
+                    <Image src='/path.png' alt="file" className="w-2/3 md:w-1/2 lg:w-1/3" width={500} height={500} />
                     <div className="flex justify-between gap-20">
                         <p>{project.startDate}</p>
                         <p>{project.endDate}</p>
@@ -71,12 +72,12 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
 
                 {/* Statistics */}
                 <div className="">
-                    <h6 className="flex gap-2 items-center border-b w-min px-2 rounded-md md:mx-8 xl:mx-4">
+                    <h6 className="flex gap-2 items-center border-b w-min px-2 rounded-md md:mx-10">
                         <IoStatsChart /> Statistics
                     </h6>
                     <div className="flex py-2 gap-4">
                         <div className="flex flex-col w-1/2 gap-2 justify-center xl:px-8">
-                            <p className="flex justify-between">
+                            <p className="flex justify-around">
                                 <span className="opacity-80">Total</span>
                                 <span>
                                     {Number.isInteger(project.statistics.totalAmount)
@@ -84,7 +85,7 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
                                         : project.statistics.totalAmount.toFixed(4)}
                                 </span>
                             </p>
-                            <p title="Average Per Milestone" className="flex justify-between">
+                            <p title="Average Per Milestone" className="flex justify-around">
                                 <span className="opacity-80">APV</span>
                                 <span>
                                     {Number.isInteger(project.statistics.averagePerMilestone)
@@ -94,20 +95,20 @@ export default function ProjectCard({ project, id, projectId, onClick }: Project
                             </p>
                         </div>
                         <div className="flex flex-col w-1/2 gap-2 justify-center xl:px-8">
-                            <p className="flex justify-between">
-                                <span className="opacity-80 truncate max-w-[80px] xl:max-w-[120px]">Max Payable</span>
+                            <p className="flex justify-around">
+                                <span className="opacity-80 truncate max-w-[100px] xl:max-w-[120px]">Max Payable</span>
                                 <span>
                                     {Number.isInteger(project.statistics.maxPayable)
                                         ? project.statistics.maxPayable
-                                        : project.statistics.maxPayable.toFixed(2)}
+                                        : project.statistics.maxPayable.toFixed(4)}
                                 </span>
                             </p>
-                            <p className="flex justify-between">
-                                <span className="opacity-80 truncate max-w-[80px] xl:max-w-[120px]">Min Payable</span>
+                            <p className="flex justify-around">
+                                <span className="opacity-80 truncate max-w-[100px] xl:max-w-[120px]">Min Payable</span>
                                 <span>
                                     {Number.isInteger(project.statistics.minPayable)
                                         ? project.statistics.minPayable
-                                        : project.statistics.minPayable.toFixed(2)}
+                                        : project.statistics.minPayable.toFixed(4)}
                                 </span>
                             </p>
                         </div>

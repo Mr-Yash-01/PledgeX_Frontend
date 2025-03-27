@@ -258,7 +258,7 @@ const ProjectDashboard: React.FC = () => {
               <CMilestones
               projectId={projectId}
               index={index}
-              totalAmount={projectData?.statistics.totalAmount}
+              milestoneAmount={projectData?.milestones[index]?.cost}
               freelancerPublicAddress={projectData?.freelancerPublicAddress}
               actionable={index === 0 || projectData.milestones[index - 1]?.status === 'approved'}
               milestoneData={milestone}

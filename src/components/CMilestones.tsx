@@ -19,12 +19,12 @@ interface FMilestoneProps {
   projectId : string,
   index: number,
   freelancerPublicAddress: string,
-  totalAmount: number
+  milestoneAmount: number
 }
 
 
 
-export const CMilestones = ({ milestoneData, actionable, projectId, index, totalAmount, freelancerPublicAddress }: FMilestoneProps) => {
+export const CMilestones = ({ milestoneData, actionable, projectId, index, milestoneAmount, freelancerPublicAddress }: FMilestoneProps) => {
 
     const toast = useContext(ToastContext);
 
@@ -33,7 +33,7 @@ export const CMilestones = ({ milestoneData, actionable, projectId, index, total
         const response = await axios.put('http://localhost:4000/user/c/sm', {
             projectId : projectId,
             index : index,
-            totalAmount : totalAmount,
+            milestoneAmount : milestoneAmount,
             freelancerPublicAddress : freelancerPublicAddress
         })
 
@@ -52,14 +52,10 @@ export const CMilestones = ({ milestoneData, actionable, projectId, index, total
     
   return (
     <div className="flex justify-evenly h-fit gap-2 ">
-
-      {/* 1st div */}
-      <div className=" flex flex-col justify-end ">
-        <h3 title={milestoneData.name} className="text-2xl truncate capitalize cursor-pointer max-w-28 md:max-w-full lg:max-w-72">{milestoneData.name}</h3>
+      <div className="w-28 flex flex-col justify-end">
+        <h3 className="text-lg">{milestoneData.name}</h3>
         <h4 className="text-sm">{milestoneData.difficulty}</h4>
       </div>
-
-      {/* 2nd div */}
       <div
         title={`${milestoneData.difficulty} level`}
         className="flex flex-col cursor-pointer items-center">
@@ -76,16 +72,14 @@ export const CMilestones = ({ milestoneData, actionable, projectId, index, total
           <div className=" bg-[#cccccc] rounded-full h-4 w-4"></div>
         </div>
       </div>
-
-      {/* 3rd div */}
       <div className="flex flex-col justify-between">
-        <div className="flex justify-end pt-8 pr-6">
+        <div className="flex justify-end pt-4">
             {
                 (milestoneData.status === 'pending') ? 
-                <FaClock className={`w-4 h-4 cursor-not-allowed`} /> :
+                <FaClock  className={`w-4 h-4 cursor-not-allowed `} /> :
                 (milestoneData.status === 'sent') ?
-                <FaCheck onClick={handleCheckClick} className={`w-4 h-4 cursor-pointer ${actionable ? '': ''}`} /> :
-                <BiCheckDouble className={` w-6 h-6 `} /> 
+                <FaCheck onClick={handleCheckClick} className={`w-4 h-4 cursor-pointer `} /> :
+                <BiCheckDouble className={` w-6 h-6`} /> 
             }
         </div>
         <div className="w-28 pl-2 flex flex-col justify-end">

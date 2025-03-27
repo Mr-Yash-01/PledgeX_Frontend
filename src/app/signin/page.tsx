@@ -133,7 +133,7 @@ export default function Signin() {
     const token = await signInWithGithub();
     
 
-    axios
+    await axios
       .post("http://localhost:4000/auth/signin/gh", { token })
       .then((response) => {
         try {
@@ -193,7 +193,7 @@ export default function Signin() {
               type="password"
               onChange={validatePassword}
             />
-            <Info info="Forgot Password?" className="text-right underline" />
+            {/* <Info info="Forgot Password?" className="text-right underline" /> */}
 
             {
               loading ? (

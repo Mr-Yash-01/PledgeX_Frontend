@@ -7,13 +7,14 @@ import Button from "@/components/Button";
 import Info from "@/components/Info";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { IoMdCheckmark, IoMdMail, IoMdPersonAdd } from "react-icons/io";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
 import { signInWithGithub, signInWithGoogle } from "@/services/auth";
 import { GrLinkNext } from "react-icons/gr";
 import { IoPerson } from "react-icons/io5";
 import Checkbox from "@/components/Checkbox";
 import Loader from "@/components/Loader";
+import { ToastContext } from "@/store/ToastContext";
 
 export default function SignUp() {
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -34,6 +35,7 @@ export default function SignUp() {
     about: "",
     publicAddress: ""
   });
+  const toast = useContext(ToastContext);
 
   useEffect(() => {
     // Enable/disable button based on validity of email and password
@@ -84,31 +86,34 @@ export default function SignUp() {
     }
   };
 
-const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const publicAddress = e.target.value;
+const validatePublicAddress = (e?: React.ChangeEvent<HTMLInputElement>) => {
+    const publicAddress = e?.target.value || user.publicAddress;
     const addressRegex = /^0x[a-fA-F0-9]{40}$/;
     const containerDiv = document.getElementById("yourPublicAddressDiv");
 
-    setUser((prevState) => ({ ...prevState, publicAddress }));
-    // if (!publicAddress) {
-    //     // If public address is empty, remove all validation styles
-    //     containerDiv?.classList.remove("shadow-green-700", "shadow-red-700");
-    //     nextButtonRef.current?.classList.remove("shadow-green-700");
-    //     nextButtonRef.current?.classList.add("shadow-zinc-900");
-    //     setUser((prevState) => ({ ...prevState, publicAddress: "" }));
-    // } else if (!addressRegex.test(publicAddress)) {
-    //     // If public address is invalid, apply error style
-    //     containerDiv?.classList.add("shadow-red-700");
-    //     containerDiv?.classList.remove("shadow-green-700");
-    //     nextButtonRef.current?.classList.remove("shadow-green-700");
-    //     nextButtonRef.current?.classList.add("shadow-zinc-900");
-    //     setUser((prevState) => ({ ...prevState, publicAddress: "" }));
-    // } else {
-    //     // If public address is valid, apply success style
-    //     containerDiv?.classList.add("shadow-green-700");
-    //     containerDiv?.classList.remove("shadow-red-700");
-    //     setUser((prevState) => ({ ...prevState, publicAddress }));
-    // }
+    // setUser((prevState) => ({ ...prevState, publicAddress }));
+    if (!publicAddress) {
+        // If public address is empty, remove all validation styles
+        containerDiv?.classList.remove("shadow-green-700", "shadow-red-700");
+        nextButtonRef.current?.classList.remove("shadow-green-700");
+        nextButtonRef.current?.classList.add("shadow-zinc-900");
+        setUser((prevState) => ({ ...prevState, publicAddress: "" }));
+    } else if (!addressRegex.test(publicAddress)) {
+        // If public address is invalid, apply error style
+        containerDiv?.classList.add("shadow-red-700");
+        containerDiv?.classList.remove("shadow-green-700");
+        nextButtonRef.current?.classList.remove("shadow-green-700");
+        nextButtonRef.current?.classList.add("shadow-zinc-900");
+        setUser((prevState) => ({ ...prevState, publicAddress: "" }));
+        toast?.showMessage("Invalid public address", "error");
+        return false;
+    } else {
+        // If public address is valid, apply success style
+        containerDiv?.classList.add("shadow-green-700");
+        containerDiv?.classList.remove("shadow-red-700");
+        setUser((prevState) => ({ ...prevState, publicAddress }));
+        return true;
+    }
 };
 
   const validatePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,6 +218,10 @@ const validatePublicAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const handleCreateAccount = () => {
     setIsLoading(true);
+    if (!validatePublicAddress()){
+      setIsLoading(false);
+      return;
+    }
     const name = (document.getElementById("yourName") as HTMLInputElement)
       .value;
     setUser((prevState) => ({ ...prevState, name }));

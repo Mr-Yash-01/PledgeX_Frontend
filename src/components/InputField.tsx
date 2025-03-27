@@ -1,24 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import { IoMdMail } from "react-icons/io";
 import { IconType } from "react-icons";
 
-
 /**
  * Props for the InputField component.
- * 
- * @interface InputFieldProps
- * @property {string} title - The title or label for the input field.
- * @property {string} [type] - The type of the input field (e.g., "text", "password"). Defaults to "text".
- * @property {string} [className] - Additional CSS classes to apply to the input field.
- * @property {string} [placeholder] - Placeholder text for the input field.
- * @property {string} [value] - The current value of the input field.
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} [onChange] - Callback function to handle changes to the input field.
- * @property {IconType} [icon] - Optional icon to display within the input field.
- * @property {string} [id] - The id attribute for the input field.
- * @property {string} [containerId] - The id attribute for the container of the input field.
- * @property {React.Ref<HTMLInputElement>} [ref] - Ref object to access the input field element.
  */
 interface InputFieldProps {
   title: string;
@@ -27,31 +14,16 @@ interface InputFieldProps {
   placeholder?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   icon?: IconType;
   id?: string;
   containerId?: string;
-  ref? : React.Ref<HTMLInputElement>
+  ref?: React.Ref<HTMLInputElement>;
   max?: number;
   min?: number;
   pattern?: string;
 }
 
-/**
- * InputField component renders a styled input field with an optional icon and title.
- *
- * @param {string} title - The title displayed above the input field. Defaults to 'Title'.
- * @param {string} type - The type of the input field. Defaults to 'text'.
- * @param {string} className - Additional CSS classes for the input field. Defaults to an empty string.
- * @param {string} placeholder - The placeholder text for the input field. Defaults to 'placeholder'.
- * @param {string | number | readonly string[] | undefined} value - The value of the input field.
- * @param {(event: React.ChangeEvent<HTMLInputElement>) => void} onChange - The function to call when the input value changes.
- * @param {React.ComponentType} icon - The icon component to display inside the input field. Defaults to IoMdMail.
- * @param {string} id - The id of the input field.
- * @param {string} containerId - The id of the container div.
- *
- * @returns {JSX.Element} The rendered InputField component.
- */
 export default function InputField({
   title = "Title",
   type = "text",
@@ -66,37 +38,51 @@ export default function InputField({
   id,
   containerId,
   ref,
-  pattern
+  pattern,
 }: InputFieldProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const prevValueRef = useRef(value || ""); // Store previous value
+  const [isUserSelecting, setIsUserSelecting] = useState(false); // Track autocomplete selection
+
   return (
     <div className="flex flex-col my-4">
       <h4 className="font-body text-lg font-medium md:text-xl">{title}</h4>
       <div
         id={containerId || undefined}
-        className="flex flex-row items-center shadow-md shadow-zinc-800 rounded px-4"
+        className={`flex flex-row items-center shadow-md rounded px-4 ${
+          prevValueRef.current === value ? "shadow-zinc-800" : "shadow-gray-700"
+        }`}
       >
         <Icon />
         <input
-          ref={ref}
+          ref={ref || inputRef}
           id={id}
           type={type}
-          className={`w-full p-2 ${className}  focus:outline-none placeholder:font-body placeholder:text-gray-500`}
+          className={`w-full p-2 ${className} focus:outline-none placeholder:font-body placeholder:text-gray-500`}
           placeholder={placeholder}
           value={value}
           maxLength={max}
           minLength={min}
           onKeyDown={onKeyDown}
           pattern={pattern}
-          onChange={onChange}
-          onBlur={(e) => {
-            const parent = e.currentTarget.parentElement;
-            parent?.classList.remove("shadow-gray-700");
-            parent?.classList.add("shadow-zinc-800");
+          autoComplete="off"
+          onChange={(e) => {
+            setIsUserSelecting(false); // Reset flag when typing manually
+            prevValueRef.current = value || ""; // Store last value before update
+            onChange?.(e);
           }}
-          onFocus={(e) => {
-            const parent = e.currentTarget.parentElement;
-            parent?.classList.remove("shadow-zinc-800");
-            parent?.classList.add("shadow-gray-700");
+          onInput={() => {
+            setIsUserSelecting(true); // Detect autocomplete selection
+          }}
+          onBlur={() => {
+            if (!isUserSelecting && prevValueRef.current !== value) {
+              inputRef.current?.parentElement?.classList.remove("shadow-gray-700");
+              inputRef.current?.parentElement?.classList.add("shadow-zinc-800");
+            }
+          }}
+          onFocus={() => {
+            inputRef.current?.parentElement?.classList.remove("shadow-zinc-800");
+            inputRef.current?.parentElement?.classList.add("shadow-gray-700");
           }}
           style={{
             backgroundColor: "var(--background)",
@@ -104,8 +90,6 @@ export default function InputField({
           }}
         />
       </div>
-
-      
     </div>
   );
 }

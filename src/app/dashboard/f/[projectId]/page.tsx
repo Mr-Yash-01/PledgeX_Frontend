@@ -229,7 +229,7 @@ const ProjectDashboard: React.FC = () => {
       </div>
 
       {/* Difficulty Meter */}
-      <div className="shadow-all-directions rounded-2xl">
+      <div className="shadow-all-directions rounded-2xl h-fit">
         <h2 className="flex items-center gap-2 text-xl px-4 py-2">
           <CgDetailsMore /> Level Gauge
         </h2>
