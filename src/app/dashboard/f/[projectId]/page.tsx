@@ -102,14 +102,14 @@ const ProjectDashboard: React.FC = () => {
   
 
   return (
-    <div className="flex flex-col p-4 pb-40 gap-12 xl:px-72 xl:grid xl:grid-cols-2 xl:gap-12">
+    <div className="flex flex-col p-4 pb-40 gap-12 xl:px-72 lg:grid lg:grid-cols-2 xl:gap-12">
       {/* ProjectDetails */}
       <div className="shadow-all-directions rounded-2xl">
         <h2 className="flex items-center gap-2 text-xl px-4 py-2">
           <CgDetailsMore /> ABOUT
         </h2>
         <hr className="opacity-20"></hr>
-        <div className="flex flex-col gap-1 px-4 py-2">
+        <div className="flex flex-col gap-4 px-4 py-2">
           <h1 className="text-6xl xl:text-8xl">{projectData?.title}</h1>
           <p className="flex gap-2 items-center text-2xl xl:text-4xl">
             <MdCategory /> {projectData?.category}

@@ -17,11 +17,15 @@ export async function middleware(req) {
 
   // If no token, redirect to signin **only if not already on /signin**
   if (!token) {
+    console.log(1);
+    
     if (pathname !== "/signin") {
+      console.log(2);
       return NextResponse.redirect(new URL("/signin", req.url));
     }
     return NextResponse.next();
   }
+  console.log(3);
 
   try {
     // Verify token by sending it to backend API

@@ -13,11 +13,6 @@ export default function C() {
   const [currectDisplay, setCurrentDisplay] = useState(true);
   const [isCreateProject, setIsCreateProject] = useState(false);
 
-  const handleSpeedDialButton = () => {
-    
-
-    setCurrentDisplay(!currectDisplay);
-  };
 
   const handleCreateProject = () => {
     
@@ -31,22 +26,12 @@ export default function C() {
         <CreateProject />
       ) : (
         <>
-          {currectDisplay ? (
-            //Project Details
-            <CDisplay
+        <CDisplay
               list={["Project 1", "Project 2", "Project 3"]}
               text="Projects"
               component={<ProjectCard />}
               
             />
-          ) : (
-            // List of freelancers
-            <CDisplay
-              list={["Freelancer 1", "Freelancer 2", "Freelancer 3"]}
-              text="Freelancers"
-              component={<FreelancerCard />}
-            />
-          )}
         </>
       )}
 
@@ -65,12 +50,12 @@ export default function C() {
         </button>
       ) : (
         <>
-          {currectDisplay ? (
+          {/* {currectDisplay ? (
             <button
               type="button"
               title="Search"
               onClick={handleSpeedDialButton}
-              className="fixed bottom-24 right-4 rounded-full bg-zinc-900 p-4 shadow-lg shadow-gray-700"
+              className="none bottom-24 right-4 rounded-full bg-zinc-900 p-4 shadow-lg shadow-gray-700"
             >
               <IoSearchSharp className="w-8 h-8" />
             </button>
@@ -83,14 +68,14 @@ export default function C() {
             >
               <FaInbox className="w-8 h-8" />
             </button>
-          )}
+          )} */}
           <button
             type="button"
-            title="Search"
+            title="Create Project"
             onClick={handleCreateProject}
-            className="fixed bottom-4 right-4 rounded-full bg-zinc-900 p-4 shadow-lg shadow-gray-700"
+            className="fixed bottom-4 right-4 rounded-full bg-zinc-900 p-4 shadow-lg shadow-gray-700 lg:bottom-20 lg:right-40" 
           >
-            <MdOutlineCreateNewFolder className="w-8 h-8" />
+            <MdOutlineCreateNewFolder className="w-8 h-8 lg:w-10 lg:h-10" />
           </button>
         </>
       )}

@@ -651,20 +651,20 @@ const CreateProject: React.FC = () => {
             onClick={handleAddMilestoneButton}
             title="Add Milestone"
             type="button"
-            className="flex gap-4 items-center justify-center w-1/2 p-2 py-2 rounded-xl shadow-lg shadow-gray-800"
+            className="flex gap-4 items-center justify-center w-1/2 lg:h-[100px] p-2 py-2 rounded-xl shadow-lg shadow-gray-800"
           >
             <IoMdAdd /> Milestone
           </button>
 
           {isLoading ? (
-            <div className="w-1/2 flex items-center justify-center"><Loader /></div>
+            <div className="w-1/2 lg:h-[100px] flex items-center justify-center"><Loader /></div>
             
           ) : (
             <button
               onClick={handleSubmitButton}
               title="Submit Project"
               type="button"
-              className="flex gap-4 items-center justify-center w-1/2 p-2 py-2 rounded-xl shadow-lg shadow-gray-800"
+              className="flex gap-4 items-center justify-center w-1/2 lg:h-[100px] p-2 py-2 rounded-xl shadow-lg shadow-gray-800"
             >
               <IoSend /> Submit
             </button>
@@ -709,7 +709,10 @@ const CreateProject: React.FC = () => {
                   Max payable: {project.statistics.maxPayable}
                 </h4>
                 <h4 className="text-lg">
-                  Min payable: {project.statistics.minPayable}
+                  Min payable:{" "}
+                  {project.statistics.minPayable === Number.MAX_VALUE
+                  ? 0
+                  : project.statistics.minPayable}
                 </h4>
                 <h4 className="text-lg">Count of difficulties:</h4>
                 <h4 className="text-lg">

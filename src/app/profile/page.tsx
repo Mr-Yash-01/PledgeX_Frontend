@@ -27,10 +27,11 @@ const ProfilePage: React.FC = () => {
     
     try {
 
-      const res = await axios.post("http://localhost:5000/auth/signout");
+      await axios.post("http://localhost:4000/auth/signout");
       
       localStorage.removeItem("userData");
       sessionStorage.removeItem("userData");
+      sessionStorage.removeItem("selectedProject");
       window.location.href = "/signin";
 
     } catch (error) {

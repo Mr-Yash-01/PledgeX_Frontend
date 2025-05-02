@@ -62,7 +62,7 @@ export default function FreelancerCard({ freelancer }: FreelancerCardProps) {
             className="w-28 h-28 object-contain rounded "
           />
         </div>
-        <div>
+        {/* <div>
           <h1 className="text-3xl font-bold uppercase truncate max-w-48 xl:max-w-72">
             {freelancer?.name}
           </h1>
@@ -70,9 +70,12 @@ export default function FreelancerCard({ freelancer }: FreelancerCardProps) {
             {freelancer?.email}
           </h1>
           <p className="flex gap-2 font-bold items-center truncate max-w-48">
-            {new Date(freelancer?.createdAt._seconds).toLocaleDateString()}
+          {freelancer?.createdAt?.toDate
+  ? freelancer.createdAt.toDate().toLocaleDateString()
+  : "Unknown"}
+
           </p>
-        </div>
+        </div> */}
       </div>
       <div>
         <div className="flex gap-1 items-center">

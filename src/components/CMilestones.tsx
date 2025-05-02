@@ -1,6 +1,6 @@
 import { ToastContext } from "@/store/ToastContext";
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { BiCheckDouble } from "react-icons/bi";
 import { FaCheck, FaClock } from "react-icons/fa";
 import { SiEthereum } from "react-icons/si";
@@ -20,31 +20,40 @@ interface FMilestoneProps {
   index: number,
   freelancerPublicAddress: string,
   milestoneAmount: number
+  totalAmount: number
 }
 
 
 
-export const CMilestones = ({ milestoneData, actionable, projectId, index, milestoneAmount, freelancerPublicAddress }: FMilestoneProps) => {
+export const CMilestones = ({ milestoneData,totalAmount, projectId, index, milestoneAmount, freelancerPublicAddress }: FMilestoneProps) => {
 
     const toast = useContext(ToastContext);
+    const [loading, setLoading] = useState(false);
 
   const handleCheckClick = async() => {
+    setLoading(true);
     try {      
         const response = await axios.put('http://localhost:4000/user/c/sm', {
             projectId : projectId,
             index : index,
             milestoneAmount : milestoneAmount,
-            freelancerPublicAddress : freelancerPublicAddress
+            freelancerPublicAddress : freelancerPublicAddress,
+            totalAmount: totalAmount
+        
         })
 
         if (response.status === 200) {
             toast?.showMessage('Work updated successfully', 'info');
-        } else {
-            toast?.showMessage('Error updating work', 'alert');
+            setLoading(false);
+          } else {
+          setLoading(false);
+          toast?.showMessage('Error while updating work', 'alert');
         }
         
-
-    } catch (error) {
+        
+      } catch (error) {
+        setLoading(false);
+        toast?.showMessage('Error while updating work', 'alert');
         console.log(error);
         
     }
@@ -74,13 +83,15 @@ export const CMilestones = ({ milestoneData, actionable, projectId, index, miles
       </div>
       <div className="flex flex-col justify-between">
         <div className="flex justify-end pt-4">
-            {
-                (milestoneData.status === 'pending') ? 
-                <FaClock  className={`w-4 h-4 cursor-not-allowed `} /> :
-                (milestoneData.status === 'sent') ?
-                <FaCheck onClick={handleCheckClick} className={`w-4 h-4 cursor-pointer `} /> :
-                <BiCheckDouble className={` w-6 h-6`} /> 
-            }
+          {loading ? (
+            <div className="w-4 h-4 border-4 border-t-transparent border-[#cccccc] rounded-full animate-spin"></div>
+          ) : milestoneData.status === 'pending' ? (
+            <FaClock className="w-4 h-4 cursor-not-allowed" />
+          ) : milestoneData.status === 'sent' ? (
+            <FaCheck onClick={handleCheckClick} className="w-4 h-4 cursor-pointer" />
+          ) : (
+            <BiCheckDouble className="w-6 h-6" />
+          )}
         </div>
         <div className="w-28 pl-2 flex flex-col justify-end">
           <h3 className="text-lg flex items-center gap-1">

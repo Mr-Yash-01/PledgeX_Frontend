@@ -18,20 +18,22 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
   const [userData, setUserData] = useState<UserData | null>(null);
 
   return (
-    <div className="flex flex-col h-min bg-bg text-text">
+    <div className="flex flex-col h-min bg-bg text-text ">
       {/* Navigation bar */}
-      <div className="p-4 flex justify-between items-center w-full sticky top-0 bg-bg text-text shadow-2xl shadow-zinc-800 md:px-20 lg:px-72">
+      <div className="p-4 flex justify-between items-center w-full sticky top-0 bg-bg text-text shadow-2xl shadow-zinc-800 md:px-20 xl:px-72 ">
         <Image
           src="/LogoWhite.svg"
           alt="logo"
           width={100}
           height={100}
           className="w-1/3 md:w-1/4 lg:w-1/12"
+          priority 
         />
         <Image
           src={userData?.picture || '/logoWhite.png'}
           ref={imageRef}
           alt="avatar"
+          priority 
           width={48}
           height={48}
           onClick={() => {
