@@ -108,20 +108,33 @@ export default function Signin() {
   const handleGoogleSignIn = async () => {
     const token = await signInWithGoogle();
 
-
+    setLoading(true);
     axios
       .post("http://localhost:4000/auth/signin/gg", { token })
       .then((response) => {
         try {
           
-          if (response.status === 200) {
+          if (response.data.path === "signup") {
             
             // Redirect to dashboard
+            router.push("/signup");
+
           } else {
+
+            const userData = response.data.user;
+
+            localStorage.setItem("userData", JSON.stringify(userData));
+
+            if (userData.role === "Clients") {
+              router.push("/dashboard/c");
+            } else {
+              router.push("/dashboard/f");
+            }
             
           }
         } catch (error) {
           console.log(error);
+          setLoading(false);
         }
       })
       .catch((error) => {
@@ -132,20 +145,33 @@ export default function Signin() {
   const handleGithubSignIn = async () => {
     const token = await signInWithGithub();
     
-
+    setLoading(true);
     await axios
       .post("http://localhost:4000/auth/signin/gh", { token })
       .then((response) => {
         try {
           
-          if (response.status === 200) {
+          if (response.data.path === "signup") {
             
             // Redirect to dashboard
+            router.push("/signup");
+
           } else {
+
+            const userData = response.data.user;
+
+            localStorage.setItem("userData", JSON.stringify(userData));
+
+            if (userData.role === "Clients") {
+              router.push("/dashboard/c");
+            } else {
+              router.push("/dashboard/f");
+            }
             
           }
         } catch (error) {
           console.log(error);
+          setLoading(false);
         }
       })
       .catch((error) => {

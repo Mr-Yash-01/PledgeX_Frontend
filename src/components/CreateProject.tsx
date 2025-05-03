@@ -141,7 +141,7 @@ const CreateProject: React.FC = () => {
           return false;
         }
       } else {
-        toast?.showMessage("Invalid Client Email Format!", "alert");
+        toast?.showMessage("Invalid Freelancer Email Format!", "alert");
         return false;
       }
     }
