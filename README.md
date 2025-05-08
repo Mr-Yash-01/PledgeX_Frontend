@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💻 PledgeX Frontend (Next.js + Tailwind)
 
-## Getting Started
+**Description:**
+The user interface for PledgeX is developed in TypeScript using Next.js. It features dashboards for clients and freelancers, smart contract interaction via MetaMask, and milestone management through an intuitive UI.
 
-First, run the development server:
+**Topics:**
+Next.js TypeScript Web3 React Tailwind Escrow Milestone UI Ethereum
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 💼 PledgeX Frontend Interface
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A full-featured UI for interacting with the decentralized escrow system. Built with Next.js and TypeScript to deliver a seamless Web3 experience.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ✨ Features
+- **Role-Based Dashboards**: Clients and freelancers have customized views.
+- **Connect with MetaMask**: Authenticate and transact using Ethereum wallet.
+- **Milestone View**: Check project status, upcoming payments, and file submissions.
+- **Modern Design**: Responsive interface powered by Tailwind CSS.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🛠️ Tech Stack
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Ethers.js
+- Recoil (State Management)
 
-## Learn More
+### 🚀 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- git clone https://github.com/Mr-Yash-01/PledgeX_Frontend.git
+- cd pledgeX-frontend
+- npm install
+- npm run dev
